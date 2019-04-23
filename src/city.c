@@ -7,7 +7,7 @@
 static int FORIBIDDEN_CHAR_VAL_INF = 0;
 static int FORIBIDDEN_CHAR_VAL_SUP = 31;
 
-static bool isCityNameValid(const char *name) {
+bool City_isNameValid(const char *name) {
 	int length = strlen(name) + 1;
 	if(length == 1) {
 		return false;
@@ -23,9 +23,6 @@ static bool isCityNameValid(const char *name) {
 }
 
 City *City_new(const char *name) {
-	if(!isCityNameValid(name)) {
-		return NULL;
-	}
 	City *city = malloc(sizeof(City));
 	if(!city) {
 		return NULL;

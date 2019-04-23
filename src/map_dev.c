@@ -58,17 +58,13 @@ static bool MapNode_doesRoadExist(MapNode *node1, MapNode *node2) {
 
 static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, size_t road_length, int road_builtYear) {
 	bool flag = true;
-	Road *road1to2 = Road_new(road_builtYear, road_length, node2->index);
-	Road *road2to1 = Road_new(road_builtYear, road_length, node1->index);
+	Road *road1to2 = Road_new(road_length, road_builtYear, node2->index);
+	Road *road2to1 = Road_new(road_length, road_builtYear, node1->index);
 
-	flag = (road1to2 && road2to1);
+	flag = road1to2 && road2to1;
 
-	if(flag) {
-		flag = RoadVector_add(node1->roadVector, road1to2);
-	}
-	if(flag) {
-		flag = RoadVector_add(node2->roadVector, road2to1);
-	}
+	flag = flag && RoadVector_add(node1->roadVector, road1to2);
+	flag = flag && RoadVector_add(node2->roadVector, road2to1);
 
 	return flag;
 }
@@ -82,6 +78,12 @@ static bool Map_addMapNode(Map *map, MapNode *mapNode) {
 }
 
 bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned length, int builtYear) {
+    if(!Road_areParamsValid(length, builtYear)) {
+        return false;
+    }
+    if(!City_isNameValid(city_name1) || !City_isNameValid(city_name2)) {
+        return false;
+    }
 	MapNode *mapNode1 = Map_doesCityExist(map, city_name1);
 	MapNode *mapNode2 = Map_doesCityExist(map, city_name2);
 
@@ -96,30 +98,37 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
 	}
 	/* Both cities do not exist */
 	else if(!mapNode1 && !mapNode2) {
-		bool flag = true;
+	    bool flag = true;
 		MapNode *newMapNode1 = MapNode_new(City_new(city_name1));
 		MapNode *newMapNode2 = MapNode_new(City_new(city_name2));
 
-		flag = (newMapNode1 && newMapNode2);
-		/* free memory for already alocated nodes */
+		flag = newMapNode1 && newMapNode2;
+
+		if(flag) {
+		    flag = Map_addMapNode(map, newMapNode1);
+		    flag = flag && Map_addMapNode(map, newMapNode2);
+            /* This assertion fails only if, OS cant provide more memory.
+             * Currently program can not remove MapNodes, so it's fatal err */
+		    assert(flag);
+		}
+
+		if(flag) {
+		    flag = MapNode_connectMapNodes(newMapNode1, newMapNode2, length, builtYear);
+		}
+
+        /* if error occurred, free memory for already allocated nodes */
 		if(!flag) {
-		    if(newMapNode1) {
-		        MapNode_remove(newMapNode1);
-		    }
-		    if(newMapNode2) {
-		        MapNode_remove(newMapNode2);
-		    }
+            if(!newMapNode1 || !newMapNode2) {
+                if(newMapNode1) {
+                    MapNode_remove(newMapNode1);
+                }
+                if(newMapNode2) {
+                    MapNode_remove(newMapNode2);
+                }
+                return false;
+            }
 		}
-		if(flag) {
-			flag = Map_addMapNode(map, newMapNode1);
-		}
-		if(flag) {
-            flag = Map_addMapNode(map, newMapNode2);
-		}
-		if(flag) {
-            flag = MapNode_connectMapNodes(newMapNode1, newMapNode2, length, builtYear);
-		}
-		return flag;
+		return true;
 	}
 	/* One city exists, one does not */
 	else {
@@ -129,6 +138,8 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
 			flag = newMapNode;
 			if(flag) {
 				flag = Map_addMapNode(map, newMapNode);
+                /* line 110 comment */
+				assert(flag);
 			}
 			if(flag) {
 				flag = MapNode_connectMapNodes(mapNode1, newMapNode, length, builtYear);
@@ -139,6 +150,8 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
 			flag = newMapNode;
 			if(flag) {
 				flag = Map_addMapNode(map, newMapNode);
+                /* line 110 comment */
+				assert(flag);
 			}
 			if(flag) {
 				flag = MapNode_connectMapNodes(mapNode2, newMapNode, length, builtYear);
@@ -147,6 +160,28 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
         return flag;
 	}
 }
+
+bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) {
+    /* 1 is valid road length */
+    if(!Road_areParamsValid(1, repairYear)) {
+        return false;
+    }
+    if(!City_isNameValid(city1) || !City_isNameValid(city2)) {
+        return false;
+    }
+
+    MapNode *mapNode1 = Map_doesCityExist(map, city1);
+    MapNode *mapNode2 = Map_doesCityExist(map, city2);
+
+    if(!mapNode1 || !mapNode2) {
+        return false;
+    }
+
+    //TODO if road exists, then edit. Return road existence status.
+
+    return false;
+}
+
 
 void Map_print(Map *map) {
     MapNodeVector_print(map->mapNodeVector);

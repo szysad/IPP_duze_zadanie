@@ -13,6 +13,9 @@ void deleteMap(Map *map);
 
 bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, int builtYear);
 
+bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear);
+
+
 /* development */
 void Map_print(Map *map);
 

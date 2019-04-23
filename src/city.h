@@ -15,4 +15,6 @@ void City_remove(City *city);
 
 void City_print(City *city);
 
+bool City_isNameValid(const char *name);
+
 #endif //DROGI_CITY_H
