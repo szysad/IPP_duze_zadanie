@@ -42,6 +42,7 @@ static MapNode *MapNode_getMoreBranchedMapNode(MapNode *node1, MapNode *node2) {
 	}
 }
 
+/* slightly faster then MapNode_getRoadFromConnectedNodes(), doesnt specify road direction */
 static bool MapNode_doesRoadExist(MapNode *node1, MapNode *node2) {
 	MapNode *lessBranchedMapNode = MapNode_getLessBranchedMapNode(node1, node2);
 	MapNode *moreBranchedMapNode = MapNode_getMoreBranchedMapNode(node1, node2);
@@ -54,6 +55,17 @@ static bool MapNode_doesRoadExist(MapNode *node1, MapNode *node2) {
 		}
 	}
 	return false;
+}
+
+static Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target) {
+    for(size_t i = 0; i < RoadVector_getSize(start->roadVector); i++) {
+        Road *checkedRoad = RoadVector_getRoadById(start->roadVector, i);
+
+        if(checkedRoad->destination_index == target->index) {
+            return checkedRoad;
+        }
+    }
+    return NULL;
 }
 
 static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, size_t road_length, int road_builtYear) {
@@ -177,9 +189,17 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
         return false;
     }
 
-    //TODO if road exists, then edit. Return road existence status.
+    Road *road1to2 = MapNode_getRoadFromConnectedNodes(mapNode1, mapNode2);
+    Road *road2to1 = MapNode_getRoadFromConnectedNodes(mapNode2, mapNode1);
 
-    return false;
+    if(!road1to2 || !road2to1) {
+        return false;
+    }
+
+    Road_setAge(road1to2, repairYear);
+    Road_setAge(road2to1, repairYear);
+
+    return true;
 }
 
 
