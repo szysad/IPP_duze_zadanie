@@ -5,11 +5,9 @@ int main() {
 
 	Map *map = newMap();
 
-	printf("%d\n", addRoad(map, "gowno male", "twoja stara pijana", 10, 1));
+	//printf("%d\n", addRoad(map, "gowno male", "twoja stara pijana", 10, 1));
 
-	Map_print(map);
-
-	printf("%d\n", repairRoad(map, "gowno male", "twoja stara pijana", 0));
+	printf("%d\n", repairRoad(map, "gowno male", "twoja stara pijana", 1));
 
 
 	Map_print(map);
