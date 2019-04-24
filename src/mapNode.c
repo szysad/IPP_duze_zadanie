@@ -12,6 +12,8 @@ MapNode *MapNode_new(City *city) {
 		return NULL;
 	}
 	mapNode->index = INITIAL_INDEX;
+    mapNode->distanceFromRoot = INITIAL_INDEX;
+    mapNode->queueIndex = INITIAL_INDEX;
 	mapNode->city = city;
 	mapNode->roadVector = RoadVector_new();
 	if(!mapNode->roadVector) {
@@ -27,8 +29,17 @@ void MapNode_remove(MapNode *mapNode) {
 }
 
 void MapNode_print(MapNode *mapNode) {
-    printf("\t");
-	printf("index: %d\n", mapNode->index);
+	printf("\tindex: %d\n", mapNode->index);
+	printf("\troot from distance: %d\n", mapNode->distanceFromRoot);
+	printf("\tqueue index: %d\n", mapNode->queueIndex);
 	City_print(mapNode->city);
 	RoadVector_print(mapNode->roadVector);
+}
+
+void MapNode_setDistanceFromRoot(MapNode *mapNode, int distance) {
+    mapNode->distanceFromRoot = distance;
+}
+
+void MapNode_setQueueIndex(MapNode *mapNode, int index) {
+    mapNode->queueIndex = index;
 }

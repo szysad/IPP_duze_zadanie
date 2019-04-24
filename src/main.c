@@ -1,19 +1,31 @@
 #include "map_dev.h"
+#include "mapNodePriorityQueue.h"
 #include <stdio.h>
 
 int main() {
 
-	Map *map = newMap();
+    MapNodePriorityQueue *h = MapNodePriorityQueue_new();
 
-	//printf("%d\n", addRoad(map, "gowno male", "twoja stara pijana", 10, 1));
+    MapNode *mapNodes[10];
+    for(int i = 0; i < 10; i++) {
+        mapNodes[i] = MapNode_new(City_new("elo"));
+    }
 
-	printf("%d\n", repairRoad(map, "gowno male", "twoja stara pijana", 1));
+    for(int i = 0; i < 10; i++) {
+        MapNodePriorityQueue_add(h, mapNodes[i]);
+    }
 
+    for(int i = 0; i < h->size; i++) {
+        MapNodePriorityQueue_changeKey(h, 0, 9-i);
+    }
+    
 
-	Map_print(map);
+    MapNodePriorityQueue_print(h);
 
-	deleteMap(map);
+    for(int i = 0; i < 10; i++) {
+        MapNode_remove(mapNodes[i]);
+    }
 
-
+    MapNodePriorityQueue_remove(h);
 
 }
