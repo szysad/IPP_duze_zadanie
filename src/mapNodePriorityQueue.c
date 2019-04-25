@@ -27,16 +27,11 @@ void MapNodePriorityQueue_remove(MapNodePriorityQueue *queue) {
 }
 
 static void swapNodesByIndex(MapNode **mapNodeArr, int index1, int index2) {
-    printf("i1 = %d\n", mapNodeArr[index1]->queueIndex);
-    printf("i2 = %d\n", mapNodeArr[index2]->queueIndex);
     MapNode_setQueueIndex(mapNodeArr[index1], index2);
     MapNode_setQueueIndex(mapNodeArr[index2], index1);
 	MapNode *tmp = mapNodeArr[index1];
 	mapNodeArr[index1] = mapNodeArr[index2];
 	mapNodeArr[index2] = tmp;
-    printf("i1 = %d\n", mapNodeArr[index1]->queueIndex);
-    printf("i2 = %d\n", mapNodeArr[index2]->queueIndex);
-    printf("\n");
 }
 
 static int parent(int i) {
@@ -83,7 +78,6 @@ static void MapNodePriorityQueue_bubbleDown(MapNodePriorityQueue *queue, int ind
 
 		if(rChild(index) < queue->size) {
 			/* node can swap with both lchild and rchild */
-			printf("can go lchild or rchild\n");
 			if(queue->mapNodesArr[lChild(index)]->distanceFromRoot < queue->mapNodesArr[rChild(index)]->distanceFromRoot) {
 				/* lchild has bigger priority then rchild */
 				swapNodesByIndex(queue->mapNodesArr, index, lChild(index));
@@ -94,7 +88,6 @@ static void MapNodePriorityQueue_bubbleDown(MapNodePriorityQueue *queue, int ind
 				index = rChild(index);
 			}
 		} else {
-			printf("can go lchild only\n");
 			/* node can only swap with lchild */
 			swapNodesByIndex(queue->mapNodesArr, index, lChild(index));
 			index = lChild(index);
@@ -102,7 +95,7 @@ static void MapNodePriorityQueue_bubbleDown(MapNodePriorityQueue *queue, int ind
 	}
 }
 
-void MapNodePriorityQueue_changeKey(MapNodePriorityQueue *queue, int index, int val) {
+static void MapNodePriorityQueue_changeKey(MapNodePriorityQueue *queue, int index, int val) {
 	if(val > queue->mapNodesArr[index]->distanceFromRoot) {
 		MapNode_setDistanceFromRoot(queue->mapNodesArr[index], val);
 		MapNodePriorityQueue_bubbleDown(queue, index);
@@ -113,6 +106,38 @@ void MapNodePriorityQueue_changeKey(MapNodePriorityQueue *queue, int index, int 
 	}
 }
 
+void MapNodePriorityQueue_updateNode(MapNodePriorityQueue *queue, MapNode *mapNode, int val) {
+    MapNodePriorityQueue_changeKey(queue, mapNode->queueIndex, val);
+}
+
+static void MapNodePriorityQueue_heapify(MapNodePriorityQueue *queue, int index) {
+    int l = lChild(index);
+    int r = rChild(index);
+    int smallest = index;
+    if(l < queue->size && queue->mapNodesArr[l]->distanceFromRoot < queue->mapNodesArr[index]->distanceFromRoot) {
+        smallest = l;
+    }
+    if(r < queue->size && queue->mapNodesArr[r]->distanceFromRoot < queue->mapNodesArr[smallest]->distanceFromRoot) {
+        smallest = r;
+    }
+    if(smallest != index) {
+        swapNodesByIndex(queue->mapNodesArr, index, smallest);
+        MapNodePriorityQueue_heapify(queue, smallest);
+    }
+}
+
+MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue) {
+    MapNode *min = queue->mapNodesArr[0];
+    queue->mapNodesArr[0] = queue->mapNodesArr[queue->size - 1];
+    (queue->size)--;
+    MapNodePriorityQueue_heapify(queue, 0);
+
+    return min;
+}
+
+bool MapNodePriorityQueue_isEmpty(MapNodePriorityQueue *queue) {
+    return queue->size == 0;
+}
 
 
 /* DEVELOPMENT */

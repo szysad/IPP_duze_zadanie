@@ -16,7 +16,11 @@ void MapNodePriorityQueue_remove(MapNodePriorityQueue *queue);
 
 bool MapNodePriorityQueue_add(MapNodePriorityQueue *queue, MapNode *mapNode);
 
-void MapNodePriorityQueue_changeKey(MapNodePriorityQueue *queue, int index, int val);
+void MapNodePriorityQueue_updateNode(MapNodePriorityQueue *queue, MapNode *mapNode, int val);
+
+MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue);
+
+bool MapNodePriorityQueue_isEmpty(MapNodePriorityQueue *queue);
 
 /* DEVELOPMENT */
 void MapNodePriorityQueue_print(MapNodePriorityQueue *queue);
