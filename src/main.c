@@ -4,33 +4,21 @@
 
 int main() {
 
-    MapNodePriorityQueue *h = MapNodePriorityQueue_new();
+    Map *map = newMap();
 
-    MapNode *mapNodes[10];
-    for(int i = 0; i < 10; i++) {
-        mapNodes[i] = MapNode_new(City_new("elo"));
-    }
+    assert(addRoad(map, "1", "2", 10, 3));
+    assert(addRoad(map, "1", "3", 10, 1));
+    assert(addRoad(map, "3", "2", 10, 5));
+    assert(addRoad(map, "3", "4", 10, 4));
+    assert(addRoad(map, "2", "4", 10, 2));
+    assert(addRoad(map, "3", "5", 10, 3));
+    assert(addRoad(map, "4", "5", 10, 1));
+    assert(addRoad(map, "2", "5", 10, 3));
 
-    for(int i = 0; i < 10; i++) {
-        MapNodePriorityQueue_add(h, mapNodes[i]);
-    }
+    assert(newRoute(map, 420, "1", "3"));
 
-    for(int i = 0; i < h->size; i++) {
-        MapNodePriorityQueue_updateNode(h, mapNodes[i], (i*i*i + 5*i - 6)/(10 % (i+1)+1));
-    }
+    Map_print(map);
 
-    MapNodePriorityQueue_print(h);
-
-    while (!MapNodePriorityQueue_isEmpty(h)) {
-        MapNode_print(MapNodePriorityQueue_popMin(h));
-    }
-
-    MapNodePriorityQueue_print(h);
-
-    for(int i = 0; i < 10; i++) {
-        MapNode_remove(mapNodes[i]);
-    }
-
-    MapNodePriorityQueue_remove(h);
+    deleteMap(map);
 
 }

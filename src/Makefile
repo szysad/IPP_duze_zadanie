@@ -9,7 +9,7 @@ all: main.o mapNodeVector.o mapNode.o roadVector.o road.o city.o map_dev.o mapNo
 main.o: city.o road.o roadVector.o mapNode.o mapNodeVector.o map_dev.o mapNodePriorityQueue.o
 	$(CC) $(CFLAGS) main.c -c -o main.o
 
-map_dev.o: map_dev.c map_dev.h mapNodeVector.o
+map_dev.o: map_dev.c map_dev.h mapNodeVector.o mapNodePriorityQueue.o
 	$(CC) $(CFLAGS) map_dev.c -c -o map_dev.o
 
 mapNodeVector.o: mapNodeVector.c mapNodeVector.h mapNode.o

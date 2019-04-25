@@ -17,4 +17,6 @@ void City_print(City *city);
 
 bool City_isNameValid(const char *name);
 
+bool City_areNamesEqual(const char *name1, const char *name2);
+
 #endif //DROGI_CITY_H

@@ -1,4 +1,5 @@
 #include "map_dev.h"
+#include "mapNodePriorityQueue.h"
 #include <string.h>
 #include <assert.h>
 
@@ -93,7 +94,7 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
     if(!Road_areParamsValid(length, builtYear)) {
         return false;
     }
-    if(!City_isNameValid(city_name1) || !City_isNameValid(city_name2)) {
+    if(!City_isNameValid(city_name1) || !City_isNameValid(city_name2) || City_areNamesEqual(city_name1, city_name2)) {
         return false;
     }
 	MapNode *mapNode1 = Map_doesCityExist(map, city_name1);
@@ -202,6 +203,51 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
     return true;
 }
 
+static void dijkstra(Map *map, MapNode *start, MapNode *end) {
+
+    MapNodePriorityQueue *queue = MapNodePriorityQueue_new();
+
+    for(size_t i = 0; i < MapNodeVector_getSize(map->mapNodeVector); i++) {
+        MapNode_setDistanceFromRoot(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        MapNodePriorityQueue_add(queue, MapNodeVector_getMapNodeById(map->mapNodeVector, i));
+    }
+
+    MapNodePriorityQueue_updateNode(queue, start, 0);
+
+    while (!MapNodePriorityQueue_isEmpty(queue)) {
+        MapNode *processedNode = MapNodePriorityQueue_popMin(queue);
+
+        for(size_t i = 0; i < RoadVector_getSize(processedNode->roadVector); i++) {
+            Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
+            int roadTarget = currentRoad->destination_index;
+            MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
+
+            if(currentNode->distanceFromRoot > processedNode->distanceFromRoot + currentRoad->length) {
+                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
+                MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+            }
+        }
+    }
+
+    MapNodePriorityQueue_remove(queue);
+}
+
+bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
+    if(!City_isNameValid(city1) || !City_isNameValid(city2) || routeId > 999) {
+        return false;
+    }
+
+    MapNode *start = Map_doesCityExist(map, city1);
+    MapNode *end = Map_doesCityExist(map, city2);
+
+    if(!start || !end) {
+        return false;
+    }
+
+    dijkstra(map, start, end);
+    return 1;
+
+}
 
 void Map_print(Map *map) {
     MapNodeVector_print(map->mapNodeVector);

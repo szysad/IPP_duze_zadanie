@@ -30,7 +30,7 @@ void MapNode_remove(MapNode *mapNode) {
 
 void MapNode_print(MapNode *mapNode) {
 	printf("\tindex: %d\n", mapNode->index);
-	printf("\troot from distance: %d\n", mapNode->distanceFromRoot);
+	printf("\tdistance from root: %d\n", mapNode->distanceFromRoot);
 	printf("\tqueue index: %d\n", mapNode->queueIndex);
 	City_print(mapNode->city);
 	RoadVector_print(mapNode->roadVector);

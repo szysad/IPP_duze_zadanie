@@ -135,6 +135,11 @@ MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue) {
     return min;
 }
 
+void MapNodePriorityQueue_removeNode(MapNodePriorityQueue *queue, MapNode *mapNode) {
+    MapNodePriorityQueue_changeKey(queue, mapNode->queueIndex, INT_MIN);
+    MapNodePriorityQueue_popMin(queue);
+}
+
 bool MapNodePriorityQueue_isEmpty(MapNodePriorityQueue *queue) {
     return queue->size == 0;
 }
