@@ -10,7 +10,7 @@ typedef struct _heap {
     MapNode **mapNodesArr;
 } MapNodePriorityQueue;
 
-MapNodePriorityQueue *MapNodePriorityQueue_new();
+MapNodePriorityQueue *MapNodePriorityQueue_new(void);
 
 void MapNodePriorityQueue_remove(MapNodePriorityQueue *queue);
 

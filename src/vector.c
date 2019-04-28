@@ -1,0 +1,75 @@
+#include "vector.h"
+#include <stdlib.h>
+#include <assert.h>
+
+static size_t const INITIAL_CAPACITY = 5;
+static int const EXPANSION_RATIO = 2;
+
+Vector *Vector_new(void (*freeFunc)(void *)) {
+    Vector *v = malloc(sizeof(Vector));
+    if(!v) {
+        return NULL;
+    }
+    v->elementsArr = malloc(INITIAL_CAPACITY * sizeof(void *));
+    if(!v->elementsArr) {
+        return NULL;
+    }
+    v->size = 0;
+    v->capacity = INITIAL_CAPACITY;
+    v->freeFunc = freeFunc;
+
+    return v;
+}
+
+bool Vector_add(Vector *vector, void *element) {
+    if(vector->size >= vector->capacity) {
+        vector->elementsArr = realloc(vector->elementsArr, vector->capacity * EXPANSION_RATIO * sizeof(void *));
+        vector->capacity *= EXPANSION_RATIO;
+        if(!vector->elementsArr) {
+            return false;
+        }
+    }
+    vector->elementsArr[vector->size] = element;
+    (vector->size)++;
+    return true;
+}
+
+void *Vector_getElemById(Vector *vector, size_t id) {
+    assert(id < vector->size);
+    return vector->elementsArr[id];
+}
+
+static bool Vector_optimizeMemory(Vector *vector) {
+    if(vector->size > INITIAL_CAPACITY * EXPANSION_RATIO && vector->size < vector->capacity / EXPANSION_RATIO) {
+        vector->capacity /= EXPANSION_RATIO;
+        vector->elementsArr = realloc(vector->elementsArr, vector->capacity * sizeof(void *));
+        return true;
+    }
+    return false;
+}
+
+size_t Vector_getSize(Vector *v) {
+    return v->size;
+}
+
+void Vector_removeElemByIndex(Vector *vector, size_t index) {
+    assert(index < vector->size);
+    if(vector->freeFunc != NULL) {
+        vector->freeFunc(vector->elementsArr[index]);
+    }
+    for(size_t i = index; i < vector->size - 1; i++) {
+        vector->elementsArr[i] = vector->elementsArr[i + 1];
+    }
+    (vector->size)--;
+    Vector_optimizeMemory(vector);
+}
+
+void Vector_remove(Vector *v) {
+    if (v->freeFunc != NULL) {
+        for (size_t i = 0; i < v->size; i++) {
+            v->freeFunc(v->elementsArr[i]);
+        }
+    }
+    free(v->elementsArr);
+    free(v);
+}

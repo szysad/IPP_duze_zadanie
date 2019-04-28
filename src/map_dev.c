@@ -1,17 +1,20 @@
 #include "map_dev.h"
 #include "mapNodePriorityQueue.h"
+#include "mapNode_list.h"
 #include <string.h>
 #include <assert.h>
 
 Map* newMap(void) {
 	Map *map = malloc(sizeof(Map));
 	map->mapNodeVector = MapNodeVector_new();
+	map->nationalRoadsVector = Vector_new(MapNodeList_remove);
 
 	return map;
 }
 
 void deleteMap(Map *map) {
 	MapNodeVector_remove(map->mapNodeVector);
+	Vector_remove(map->nationalRoadsVector);
 	free(map);
 }
 
@@ -203,50 +206,155 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
     return true;
 }
 
-static void dijkstra(Map *map, MapNode *start, MapNode *end) {
+int min(int a, int b) {
+    if(a < b) {
+        return a;
+    }
+    else {
+        return b;
+    }
+}
+
+int getNewNodeOldestRoadAge(MapNode *nodeFrom, Road *roadFromTo) {
+    assert(roadFromTo->buildYear != 0);
+    int roadOldestVal;
+    if(roadFromTo->lastRepairYear == 0) {
+        roadOldestVal = roadFromTo->buildYear;
+    }
+    else {
+        roadOldestVal = min(roadFromTo->buildYear, roadFromTo->lastRepairYear);
+    }
+    return min(roadOldestVal, nodeFrom->oldestRoadAgeToMe);
+}
+
+bool updateNodeOldestRoadAge(MapNode *nodeFrom, MapNode *nodeTo, Road *roadFromTo) {
+    int newOldestRoadAgeVal = min(nodeTo->oldestRoadAgeToMe, getNewNodeOldestRoadAge(nodeFrom, roadFromTo));
+
+    if(newOldestRoadAgeVal < nodeTo->oldestRoadAgeToMe) {
+        MapNode_setOldestRoadAge(nodeTo, newOldestRoadAgeVal);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) {
 
     MapNodePriorityQueue *queue = MapNodePriorityQueue_new();
 
     for(size_t i = 0; i < MapNodeVector_getSize(map->mapNodeVector); i++) {
         MapNode_setDistanceFromRoot(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
         MapNodePriorityQueue_add(queue, MapNodeVector_getMapNodeById(map->mapNodeVector, i));
+        MapNode_setOldestRoadAge(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        parentIndex[i] = -1;
     }
 
     MapNodePriorityQueue_updateNode(queue, start, 0);
+    MapNode *processedNode = NULL;
+    bool isFound = false;
+    bool isExplicit = true;
 
-    while (!MapNodePriorityQueue_isEmpty(queue)) {
-        MapNode *processedNode = MapNodePriorityQueue_popMin(queue);
+    while ( !MapNodePriorityQueue_isEmpty(queue) && !isFound) {
+        processedNode = MapNodePriorityQueue_popMin(queue);
 
-        for(size_t i = 0; i < RoadVector_getSize(processedNode->roadVector); i++) {
-            Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
-            int roadTarget = currentRoad->destination_index;
-            MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX && processedNode == end) {
+            isFound = true;
+        }
 
-            if(currentNode->distanceFromRoot > processedNode->distanceFromRoot + currentRoad->length) {
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX) {
+
+            for (size_t i = 0; i < RoadVector_getSize(processedNode->roadVector) && processedNode != end; i++) {
+                Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
+                int roadTarget = currentRoad->destination_index;
+                MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
                 int newDistance = processedNode->distanceFromRoot + currentRoad->length;
-                MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+
+                if (currentNode->distanceFromRoot >= newDistance) {
+                    int newAge = getNewNodeOldestRoadAge(processedNode, currentRoad);
+                    if(currentNode == end) {
+                        if(newAge < end->oldestRoadAgeToMe) {
+                            isExplicit = true;
+                        }
+                        if(newAge == end->oldestRoadAgeToMe) {
+                            isExplicit = false;
+                        }
+                    }
+                    if(currentNode->distanceFromRoot > newDistance) {
+                        parentIndex[currentNode->index] = processedNode->index;
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+                    }
+                    if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        parentIndex[currentNode->index] = processedNode->index;
+                    }
+                }
             }
         }
     }
-
     MapNodePriorityQueue_remove(queue);
+
+    return isFound && isExplicit;
+}
+
+bool isRoutedIdAlreadyTaken(Vector *vector, size_t id) {
+    for(size_t i = 0; i < Vector_getSize(vector); i++) {
+        MapNodeList *route = (MapNodeList*) Vector_getElemById(vector, i);
+        if(route->routeId == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool ParentIndexToList(Map *map, int parent[], int j, MapNodeList *list) {
+
+    if(parent[j] == -1) {
+        return true;
+    }
+
+    ParentIndexToList(map, parent, parent[j], list);
+
+    if(!MapNodeList_append(list, MapNodeVector_getMapNodeById(map->mapNodeVector, j))){
+        return false;
+    }
+
+    return true;
 }
 
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
-    if(!City_isNameValid(city1) || !City_isNameValid(city2) || routeId > 999) {
+    if (!City_isNameValid(city1) || !City_isNameValid(city2) || City_areNamesEqual(city1, city2)) {
+        return false;
+    }
+    if(!isRouteIdValid(routeId) || isRoutedIdAlreadyTaken(map->nationalRoadsVector, routeId)) {
         return false;
     }
 
     MapNode *start = Map_doesCityExist(map, city1);
     MapNode *end = Map_doesCityExist(map, city2);
 
-    if(!start || !end) {
+    if (!start || !end) {
         return false;
     }
 
-    dijkstra(map, start, end);
-    return 1;
+    int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
 
+    if (!dijkstra(map, start, end, parentIndex)) {
+        return false;
+    }
+
+    MapNodeList *roadList = MapNodeList_new(routeId);
+    MapNodeList_append(roadList, start);
+
+    if(!ParentIndexToList(map, parentIndex, end->index, roadList)) {
+        MapNodeList_remove(roadList);
+        return false;
+    }
+
+    Vector_add(map->nationalRoadsVector, roadList);
+
+    return 1;
 }
 
 void Map_print(Map *map) {

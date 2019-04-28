@@ -52,7 +52,7 @@ bool addRoad(Map *map, const char *city1, const char *city2,
  * lub ustawia ten rok, jeśli odcinek nie był jeszcze remontowany.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
  * @param[in] city1      – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] city2      – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] city2      – wskaźnik na napis reprezentbujący nazwę miasta;
  * @param[in] repairYear – rok ostatniego remontu odcinka drogi.
  * @return Wartość @p true, jeśli modyfikacja się powiodła.
  * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną

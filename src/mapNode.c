@@ -15,6 +15,7 @@ MapNode *MapNode_new(City *city) {
     mapNode->distanceFromRoot = INITIAL_INDEX;
     mapNode->queueIndex = INITIAL_INDEX;
 	mapNode->city = city;
+    mapNode->oldestRoadAgeToMe = INT_MAX;
 	mapNode->roadVector = RoadVector_new();
 	if(!mapNode->roadVector) {
 		return NULL;
@@ -32,6 +33,7 @@ void MapNode_print(MapNode *mapNode) {
 	printf("\tindex: %d\n", mapNode->index);
 	printf("\tdistance from root: %d\n", mapNode->distanceFromRoot);
 	printf("\tqueue index: %d\n", mapNode->queueIndex);
+	printf("\toldest road age to me: %d\n", mapNode->oldestRoadAgeToMe);
 	City_print(mapNode->city);
 	RoadVector_print(mapNode->roadVector);
 }
@@ -42,4 +44,8 @@ void MapNode_setDistanceFromRoot(MapNode *mapNode, int distance) {
 
 void MapNode_setQueueIndex(MapNode *mapNode, int index) {
     mapNode->queueIndex = index;
+}
+
+void MapNode_setOldestRoadAge(MapNode *mapNode, int age) {
+    mapNode->oldestRoadAgeToMe = age;
 }

@@ -2,9 +2,12 @@
 #define __MAP_DEV_H__
 
 #include "mapNodeVector.h"
+#include "vector.h"
+#include "mapNode_list.h"
 
 typedef struct _map {
 	MapNodeVector *mapNodeVector;
+	Vector *nationalRoadsVector;
 } Map;
 
 Map* newMap(void);
