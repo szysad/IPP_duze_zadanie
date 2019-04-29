@@ -1,6 +1,15 @@
 #include "road.h"
 #include <stdlib.h>
 
+static int min(int a, int b) {
+    if(a < b) {
+        return a;
+    }
+    else {
+        return b;
+    }
+}
+
 Road *Road_new(int length, int age, int destination_index) {
 	Road *road = malloc(sizeof(Road));
 	if(!road) {
@@ -24,6 +33,15 @@ void Road_remove(Road *road) {
 
 bool Road_areParamsValid(int length, int age) {
     return (age != 0 && length > 0);
+}
+
+int Road_getAge(Road* road) {
+    if(road->lastRepairYear == 0) {
+        return road->buildYear;
+    }
+    else {
+        return min(road->buildYear, road->lastRepairYear);
+    }
 }
 
 /* development */

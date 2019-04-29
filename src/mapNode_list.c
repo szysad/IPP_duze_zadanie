@@ -1,4 +1,5 @@
 #include "mapNode_list.h"
+#include <string.h>
 
 static ListNode *ListNode_new(MapNode *node, ListNode *next) {
     ListNode *new = malloc(sizeof(ListNode));
@@ -222,6 +223,70 @@ MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, siz
     free(list2);
 
     return newList;
+}
+
+int countDigit(size_t n)
+{
+    int count = 0;
+    while (n != 0) {
+        n /= 10;
+        ++count;
+    }
+    return count;
+}
+
+size_t getRouteDescriptionSize(MapNodeList *list) {
+    assert(!MapNodeList_isEmpty(list));
+
+    ListNode *elem = list->head;
+    MapNode *nodeFrom = list->head->value;
+    MapNode *nodeTo = NULL;
+    size_t size = 0;
+
+    size += countDigit(list->routeId) + 1;// "routeId" + ";"
+    while (elem != NULL) {
+        nodeFrom = elem->value;
+        size += nodeFrom->city->length; //"cityName" - "\0" + ";"
+        elem = elem->next;
+        if(elem) {
+            nodeTo = elem->value;
+            Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
+            size += countDigit(roadFromTo->length) + 1; //"length" + ";"
+            size += countDigit(Road_getAge(roadFromTo)) + 1; //"roadAge" + ";"
+        }
+    }
+    return size + 1;// ... + "\0"
+}
+
+void putRouteDescription(MapNodeList *list, char string[]) {
+    ListNode *elem = list->head;
+    MapNode *nodeFrom = list->head->value;
+    MapNode *nodeTo = NULL;
+    char *tmp;
+
+    sprintf(string, "%d", countDigit(list->routeId));
+    strcat(string, ";");
+    while (elem != NULL) {
+        nodeFrom = elem->value;
+        strcat(string, nodeFrom->city->name);
+        strcat(string, ";");
+        elem = elem->next;
+        if(elem) {
+            nodeTo = elem->value;
+            Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
+            tmp = malloc(countDigit(roadFromTo->length));
+            sprintf(tmp, "%d", roadFromTo->length);
+            strcat(string, tmp);
+            strcat(string, ";");
+            free(tmp);
+            tmp = malloc(countDigit(Road_getAge(roadFromTo)) * sizeof(char));
+            sprintf(tmp, "%d", Road_getAge(roadFromTo));
+            strcat(string, tmp);
+            strcat(string, ";");
+            free(tmp);
+        }
+    }
+    strcat(string, "\0");
 }
 
 void MapNodeList_print(MapNodeList *list) {

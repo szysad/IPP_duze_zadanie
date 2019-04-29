@@ -53,4 +53,8 @@ void MapNodeList_setLength(MapNodeList *list, int length);
 
 void MapNodeList_setOldestIncludedRoadAge(MapNodeList *list, int age);
 
+size_t getRouteDescriptionSize(MapNodeList *list);
+
+void putRouteDescription(MapNodeList *list, char string[]);
+
 #endif //__MAPNODE_LIST_H__

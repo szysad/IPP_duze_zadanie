@@ -1,4 +1,4 @@
-#include "map_dev.h"
+#include "map.h"
 #include "mapNodePriorityQueue.h"
 #include <stdio.h>
 
@@ -20,19 +20,10 @@ int main() {
     assert(addRoad(map, "3", "1", 10, 3));
     assert(addRoad(map, "4", "1", 10, 4));
 
-    assert(newRoute(map, 420, "4", "3"));
-    //assert(newRoute(map, 421, "3", "4"));
+    assert(newRoute(map, 421, "3", "4"));
 
-    printf("remove: %d\n", removeRoad(map, "2", "3"));
-
-    //Map_print(map);
-
-
-    for(size_t i = 0; i < map->nationalRoadsVector->size; i++) {
-        MapNodeList_print(map->nationalRoadsVector->elementsArr[i]);
-        printf("----------\n");
-    }
-
+    char const *str = getRouteDescription(map, 421);
+    printf(str);
 
     deleteMap(map);
 
