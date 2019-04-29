@@ -35,6 +35,10 @@ MapNode *MapNodeList_getHeadNode(MapNodeList *list);
 
 MapNode *MapNodeList_getTailNode(MapNodeList *list);
 
+bool MapNodeList_areConnectedNodesIncludedInRoad(MapNodeList *list, MapNode *start, MapNode *end);
+
+void MapNodeList_disconnectBetweenNodes(MapNodeList *list, MapNode *node1, MapNode *node2, MapNodeList **firstPart, MapNodeList **secondPart);
+
 /* if route1 more preferred then route2 returns 1
  * if route1 less preferred then route2 returns -1
  * if route1 and route2 have same preference returns 0 */

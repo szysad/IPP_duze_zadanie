@@ -3,6 +3,9 @@ CFLAGS=-Wall -Wextra -std=c11 -O2
 
 .PHONY: all clean
 
+db: main.o mapNodeVector.o mapNode.o roadVector.o road.o city.o map_dev.o mapNodePriorityQueue.o vector.o mapNode_list.o
+	$(CC) $(CFLAGS) -g -lm main.o mapNodeVector.o mapNode.o roadVector.o road.o city.o map_dev.o mapNodePriorityQueue.o vector.o mapNode_list.o -o debug
+
 all: main.o mapNodeVector.o mapNode.o roadVector.o road.o city.o map_dev.o mapNodePriorityQueue.o vector.o mapNode_list.o
 	$(CC) $(CFLAGS) main.o mapNodeVector.o mapNode.o roadVector.o road.o city.o map_dev.o mapNodePriorityQueue.o vector.o mapNode_list.o -o development
 
@@ -40,4 +43,5 @@ clean :
 	rm -f *.o
 	rm -f a.out
 	rm -f development
+	rm -f debug
 	rm -f vgcore.*

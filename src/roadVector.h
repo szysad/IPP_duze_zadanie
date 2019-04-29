@@ -21,6 +21,8 @@ void RoadVector_remove(RoadVector *vector);
 
 void RoadVector_removeRoadByIndex(RoadVector *vector, size_t index);
 
+int RoadVector_getRoadIndexInVector(RoadVector *vector, Road *road);
+
 size_t RoadVector_getSize(RoadVector *vector);
 
 Road *RoadVector_getRoadById(RoadVector *vector, size_t id);

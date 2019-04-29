@@ -85,6 +85,10 @@ int Vector_getElementVectorIndex(Vector *vector, void *elem) {
     return -1;
 }
 
+bool Vector_isEmpty(Vector *vector) {
+    return (vector->size == 0);
+}
+
 void Vector_remove(Vector *v) {
     if (v->freeFunc != NULL) {
         for (size_t i = 0; i < v->size; i++) {

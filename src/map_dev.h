@@ -22,6 +22,8 @@ bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2);
 
 bool extendRoute(Map *map, unsigned routeId, const char *city);
 
+bool removeRoad(Map *map, const char *city1, const char *city2);
+
 /* development */
 void Map_print(Map *map);
 

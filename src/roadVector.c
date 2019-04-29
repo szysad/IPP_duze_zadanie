@@ -70,6 +70,15 @@ Road *RoadVector_getRoadById(RoadVector *vector, size_t id) {
     return vector->roadArray[id];
 }
 
+int RoadVector_getRoadIndexInVector(RoadVector *vector, Road *road) {
+    for(size_t i = 0; i < RoadVector_getSize(vector); i++) {
+        if(road == RoadVector_getRoadById(vector, i)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 /* development */
 void RoadVector_print(RoadVector *roadVector) {
     for(size_t i = 0; i < roadVector->size; i++) {

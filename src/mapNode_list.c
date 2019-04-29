@@ -35,6 +35,32 @@ MapNodeList *MapNodeList_new(size_t routeId) {
     return new;
 }
 
+void MapNodeList_updateParams(MapNodeList *list) {
+    assert(!MapNodeList_isEmpty(list));
+    int newOldestIncludedRoadAge = INT_MAX;
+    int newLength = 0;
+    int newSize = 0;
+
+    ListNode *elem = list->head;
+    MapNode *nodeFrom = elem->value;
+    MapNode *nodeTo = NULL;
+    while (elem != NULL) {
+        newSize++;
+        nodeFrom = elem->value;
+        elem = elem->next;
+        if(elem) {
+            nodeTo = elem->value;
+            Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
+            assert(roadFromTo != NULL);
+            newLength += roadFromTo->length;
+            newOldestIncludedRoadAge = min(newOldestIncludedRoadAge, MapNode_getNewNodeOldestRoadAge(nodeFrom, roadFromTo));
+        }
+    }
+    list->size = newSize;
+    list->length = newLength;
+    list->oldestIncludedRoadAge = newOldestIncludedRoadAge;
+}
+
 bool MapNodeList_append(MapNodeList *list, MapNode *mapNode) {
     ListNode *new = ListNode_new(mapNode, NULL);
     if(!new) {
@@ -46,13 +72,11 @@ bool MapNodeList_append(MapNodeList *list, MapNode *mapNode) {
         return true;
     }
     else {
-        Road *road = MapNode_getRoadFromConnectedNodes(list->tail->value, new->value);
-        assert(road != NULL);
-        (list->length) += road->length;
         (list->size)++;
-        list->oldestIncludedRoadAge = min(list->oldestIncludedRoadAge, MapNode_getNewNodeOldestRoadAge(list->tail->value, road));
         list->tail->next = new;
         list->tail = new;
+        /* at this moment not necessary */
+        //MapNodeList_updateParams(list);
         return true;
     }
 }
@@ -82,6 +106,26 @@ bool MapNodeList_isNodeIncludedInList(MapNodeList* list, MapNode* node) {
     return (elem != NULL && elem->value == node);
 }
 
+bool MapNodeList_areConnectedNodesIncludedInRoad(MapNodeList *list, MapNode *node1, MapNode *node2) {
+    /* assumption: start and end are connected */
+    ListNode *elem = list->head;
+    while (elem != NULL && (elem->value != node1 && elem->value != node2)) {
+        elem = elem->next;
+    }
+    if(elem == NULL) {
+        return false;
+    }
+    MapNode *firstInRoute = elem->value;
+    elem = elem->next;
+    MapNode *secondInRoute = elem->value;
+    if(firstInRoute == node1) {
+        return secondInRoute == node2;
+    }
+    else {
+        return secondInRoute == node1;
+    }
+}
+
 MapNode *MapNodeList_getHeadNode(MapNodeList *list) {
     if(!list->head) {
         return NULL;
@@ -100,31 +144,6 @@ bool MapNodeList_isEmpty(MapNodeList *list) {
     return (list->head == NULL);
 }
 
-void MapNodeList_updateParams(MapNodeList *list) {
-    assert(!MapNodeList_isEmpty(list));
-    int newOldestIncludedRoadAge = INT_MAX;
-    int newLength = 0;
-    int newSize = 0;
-
-    ListNode *elem = list->head;
-    MapNode *nodeFrom = elem->value;
-    MapNode *nodeTo = NULL;
-    while (elem != NULL) {
-        newSize++;
-        nodeFrom = elem->value;
-        elem = elem->next;
-        if(elem) {
-            nodeTo = elem->value;
-            Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
-            newLength += roadFromTo->length;
-            newOldestIncludedRoadAge = min(newOldestIncludedRoadAge, MapNode_getNewNodeOldestRoadAge(nodeFrom, roadFromTo));
-        }
-    }
-    list->size = newSize;
-    list->length = newLength;
-    list->oldestIncludedRoadAge = newOldestIncludedRoadAge;
-}
-
 MapNode *MapNodeList_pop(MapNodeList *list) {
     assert(!MapNodeList_isEmpty(list));
     ListNode *elem = list->head;
@@ -140,6 +159,31 @@ MapNode *MapNodeList_pop(MapNodeList *list) {
     MapNodeList_updateParams(list);
 
     return poppedNode;
+}
+
+void MapNodeList_disconnectBetweenNodes(MapNodeList *list, MapNode *node1, MapNode *node2, MapNodeList **firstPart, MapNodeList **secondPart) {
+    /* assumption node1, node2 are connected and both are included in list */
+    assert(list->size >= 2);
+    ListNode *elem = list->head;
+    while (elem != NULL && (elem->value != node1 && elem->value != node2)) {
+        elem = elem->next;
+    }
+    assert(elem != NULL && elem->next->value != NULL);
+    MapNodeList *newRoute = MapNodeList_new(2137);
+    if((elem->value == node1 && elem->next->value == node2) || (elem->value == node2 && elem->next->value == node1)) {
+        newRoute->head = elem->next;
+        newRoute->tail = list->tail;
+        MapNodeList_updateParams(newRoute);
+        list->tail = elem;
+        list->tail->next = NULL;
+        MapNodeList_updateParams(list);
+
+        *firstPart = list;
+        *secondPart = newRoute;
+    }
+    else {
+        assert(false);
+    }
 }
 
 int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *route2) {
@@ -165,7 +209,8 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId) {
     assert(!MapNodeList_isEmpty(list1));
 
-    MapNodeList_pop(list1);
+    //MapNodeList_pop(list1);
+
     list1->tail->next = list2->head;
 
     MapNodeList *newList = MapNodeList_new(routeId);
@@ -182,6 +227,7 @@ MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, siz
 void MapNodeList_print(MapNodeList *list) {
     ListNode *elem = list->head;
     while (elem != NULL) {
+        //MapNode_print(elem->value);
         City_print(elem->value->city);
         elem = elem->next;
     }

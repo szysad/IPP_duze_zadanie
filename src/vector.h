@@ -23,6 +23,8 @@ void *Vector_extractElementById(Vector *vector, size_t id);
 
 int Vector_getElementVectorIndex(Vector *vector, void *elem);
 
+bool Vector_isEmpty(Vector *vector);
+
 size_t Vector_getSize(Vector *v);
 
 #endif //__VECTOR_H__

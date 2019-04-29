@@ -41,6 +41,20 @@ static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, size_t road_
 	return flag;
 }
 
+static void MapNode_disconnectNodes(MapNode *node1, MapNode *node2) {
+    Road *road1to2 = MapNode_getRoadFromConnectedNodes(node1, node2);
+    Road *road2to1 = MapNode_getRoadFromConnectedNodes(node2, node1);
+    assert(road1to2 && road2to1);
+
+    int road1to2VectorIndex =  RoadVector_getRoadIndexInVector(node1->roadVector, road1to2);
+    int road2to1VectorIndex =  RoadVector_getRoadIndexInVector(node2->roadVector, road2to1);
+
+    assert(road1to2VectorIndex >= 0 && road2to1VectorIndex >= 0);
+
+    RoadVector_removeRoadByIndex(node1->roadVector, road1to2VectorIndex);
+    RoadVector_removeRoadByIndex(node2->roadVector, road2to1VectorIndex);
+}
+
 static bool Map_addMapNode(Map *map, MapNode *mapNode) {
 	bool flag = true;
 
@@ -219,6 +233,9 @@ static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) 
                         parentIndex[currentNode->index] = processedNode->index;
                         updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
                         MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+                        if(currentNode == end) {
+                            isExplicit = true;
+                        }
                     }
                     if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
                         updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
@@ -335,10 +352,12 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 
     MapNodeList *newRoute = NULL;
     if(preference > 0) {
+        MapNodeList_pop(routeAttachcedToStart);
         newRoute = MapNodeList_mergeRoutes(routeAttachcedToStart, mainRoute, mainRoute->routeId);
         MapNodeList_remove(routeAttachcedToEnd);
     }
     else if(preference < 0) {
+        MapNodeList_pop(mainRoute);
         newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
         MapNodeList_remove(routeAttachcedToStart);
     }
@@ -351,6 +370,98 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 
     return true;
 }
+
+static Vector *getRouteWithIncludedConnectedNodes(Map *map, MapNode *node1, MapNode *node2) {
+    Vector *routesToBeEditedVector = Vector_new(NULL);
+    for(size_t i = 0; i < Vector_getSize(map->nationalRoadsVector); i++) {
+        MapNodeList *route = (MapNodeList*) Vector_getElemById(map->nationalRoadsVector, i);
+        bool rezult = MapNodeList_areConnectedNodesIncludedInRoad(route, node1, node2);
+        if(rezult) {
+            Vector_add(routesToBeEditedVector, route);
+        }
+    }
+    if(Vector_isEmpty(routesToBeEditedVector)) {
+        Vector_remove(routesToBeEditedVector);
+        return NULL;
+    }
+    else {
+        return routesToBeEditedVector;
+    }
+}
+
+bool removeRoad(Map *map, const char *city1, const char *city2) {
+    if(!map || !City_isNameValid(city1) || !City_isNameValid(city2)) {
+        return false;
+    }
+    MapNode *node1 = Map_doesCityExist(map, city1);
+    MapNode *node2 = Map_doesCityExist(map, city2);
+    if(!node1 || !node2) {
+        return false;
+    }
+
+    Road *roadToBeRemoved = MapNode_getRoadFromConnectedNodes(node1, node2);
+    if(!roadToBeRemoved) {
+        return false;
+    }
+    int removeRoadLength = roadToBeRemoved->length;
+    int removeRoadBuiltYear = roadToBeRemoved->buildYear;
+    int removeRoadLastRepairYear = roadToBeRemoved->lastRepairYear;
+
+    Vector *routesThatIncludeRoad = getRouteWithIncludedConnectedNodes(map, node1, node2);
+    /* connect if failure */
+    MapNode_disconnectNodes(node1, node2);
+    if(!routesThatIncludeRoad) {
+        return true;
+    }
+
+    Vector *newConnections = Vector_new(NULL);
+    bool canBeConnected = true;
+    bool connectionsStatus = true;
+
+    /* gather information about roads that can be reconnected */
+    for(size_t i = 0; i < Vector_getSize(routesThatIncludeRoad); i++) {
+        MapNodeList *routeToBeEdited = (MapNodeList*) Vector_getElemById(routesThatIncludeRoad, i);
+
+        MapNodeList *connect = getNewRoute(map, routeToBeEdited->routeId, MapNodeList_getHeadNode(routeToBeEdited), MapNodeList_getTailNode(routeToBeEdited));
+        canBeConnected = (connect != NULL);
+        if(!canBeConnected) {
+            connectionsStatus = false;
+        }
+        if(canBeConnected) {
+            Vector_add(newConnections, connect);
+        }
+    }
+    /* if can not be connected undo changes */
+    if(!connectionsStatus) {
+        MapNode_connectMapNodes(node1, node2, removeRoadLength, removeRoadBuiltYear);
+        if(removeRoadLastRepairYear != 0) {
+            Road_setAge(MapNode_getRoadFromConnectedNodes(node1, node2), removeRoadLastRepairYear);
+            Road_setAge(MapNode_getRoadFromConnectedNodes(node2, node1), removeRoadLastRepairYear);
+        }
+        Vector_remove(routesThatIncludeRoad);
+        Vector_remove(newConnections);
+        return false;
+    }
+    /* if reconnections are possible, make them  */
+    /* remove all routes that need to be replaced */
+    for(size_t i = 0; i < Vector_getSize(routesThatIncludeRoad); i++) {
+        void *routeToBeExtractedPtr = Vector_getElemById(routesThatIncludeRoad, i);
+        int routeToBeExtractedIndex = Vector_getElementVectorIndex(map->nationalRoadsVector, routeToBeExtractedPtr);
+        MapNodeList_remove(Vector_extractElementById(map->nationalRoadsVector, routeToBeExtractedIndex));
+    }
+
+    /* add all routes that replace old ones */
+    for(size_t i = 0; i < Vector_getSize(newConnections); i++) {
+        MapNodeList *replacingRoute = Vector_getElemById(newConnections, i);
+        Vector_add(map->nationalRoadsVector, replacingRoute);
+    }
+
+    Vector_remove(newConnections);
+    Vector_remove(routesThatIncludeRoad);
+
+    return true;
+}
+
 
 void Map_print(Map *map) {
     MapNodeVector_print(map->mapNodeVector);
