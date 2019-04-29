@@ -20,6 +20,7 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear);
 
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2);
 
+bool extendRoute(Map *map, unsigned routeId, const char *city);
 
 /* development */
 void Map_print(Map *map);

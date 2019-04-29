@@ -15,7 +15,7 @@ typedef struct _road {
 } Road;
 
 
-Road *Road_new(int age, int length, int destination_index);
+Road *Road_new(int length, int age, int destination_index);
 
 bool Road_areParamsValid(int length, int age);
 

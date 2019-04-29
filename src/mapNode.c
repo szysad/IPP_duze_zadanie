@@ -38,6 +38,71 @@ void MapNode_print(MapNode *mapNode) {
 	RoadVector_print(mapNode->roadVector);
 }
 
+static MapNode *MapNode_getMoreBranchedMapNode(MapNode *node1, MapNode *node2) {
+    if(RoadVector_getSize(node1->roadVector) < RoadVector_getSize(node2->roadVector)) {
+        return node2;
+    }
+    else {
+        return node1;
+    }
+}
+
+static MapNode *MapNode_getLessBranchedMapNode(MapNode *node1, MapNode *node2) {
+    if(RoadVector_getSize(node1->roadVector) < RoadVector_getSize(node2->roadVector)) {
+        return node1;
+    }
+    else {
+        return node2;
+    }
+}
+
+int min(int a, int b) {
+    if(a < b) {
+        return a;
+    }
+    else {
+        return b;
+    }
+}
+
+int MapNode_getNewNodeOldestRoadAge(MapNode *nodeFrom, Road *roadFromTo) {
+    assert(roadFromTo->buildYear != 0);
+    int roadOldestVal;
+    if(roadFromTo->lastRepairYear == 0) {
+        roadOldestVal = roadFromTo->buildYear;
+    }
+    else {
+        roadOldestVal = min(roadFromTo->buildYear, roadFromTo->lastRepairYear);
+    }
+    return min(roadOldestVal, nodeFrom->oldestRoadAgeToMe);
+}
+
+/* slightly faster then MapNode_getRoadFromConnectedNodes(), doesnt specify road direction */
+bool MapNode_doesRoadExist(MapNode *node1, MapNode *node2) {
+    MapNode *lessBranchedMapNode = MapNode_getLessBranchedMapNode(node1, node2);
+    MapNode *moreBranchedMapNode = MapNode_getMoreBranchedMapNode(node1, node2);
+
+    for(size_t i = 0; i < RoadVector_getSize(lessBranchedMapNode->roadVector); i++) {
+        Road *checkedRoad = RoadVector_getRoadById(lessBranchedMapNode->roadVector, i);
+
+        if(checkedRoad->destination_index == moreBranchedMapNode->index) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target) {
+    for(size_t i = 0; i < RoadVector_getSize(start->roadVector); i++) {
+        Road *checkedRoad = RoadVector_getRoadById(start->roadVector, i);
+
+        if(checkedRoad->destination_index == target->index) {
+            return checkedRoad;
+        }
+    }
+    return NULL;
+}
+
 void MapNode_setDistanceFromRoot(MapNode *mapNode, int distance) {
     mapNode->distanceFromRoot = distance;
 }

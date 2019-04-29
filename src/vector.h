@@ -19,6 +19,10 @@ void Vector_remove(Vector *v);
 
 void *Vector_getElemById(Vector *vector, size_t id);
 
+void *Vector_extractElementById(Vector *vector, size_t id);
+
+int Vector_getElementVectorIndex(Vector *vector, void *elem);
+
 size_t Vector_getSize(Vector *v);
 
 #endif //__VECTOR_H__

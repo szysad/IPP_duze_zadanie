@@ -1,7 +1,7 @@
 #include "road.h"
 #include <stdlib.h>
 
-Road *Road_new(int age, int length, int destination_index) {
+Road *Road_new(int length, int age, int destination_index) {
 	Road *road = malloc(sizeof(Road));
 	if(!road) {
 		return NULL;

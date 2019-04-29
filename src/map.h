@@ -44,8 +44,7 @@ void deleteMap(Map *map);
  * wartość, obie podane nazwy miast są identyczne, odcinek drogi między tymi
  * miastami już istnieje lub nie udało się zaalokować pamięci.
  */
-bool addRoad(Map *map, const char *city1, const char *city2,
-             unsigned length, int builtYear);
+bool addRoad(Map *map, const char *city1, const char *city2, unsigned length, int builtYear);
 
 /** @brief Modyfikuje rok ostatniego remontu odcinka drogi.
  * Dla odcinka drogi między dwoma miastami zmienia rok jego ostatniego remontu

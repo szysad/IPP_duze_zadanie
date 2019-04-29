@@ -64,6 +64,27 @@ void Vector_removeElemByIndex(Vector *vector, size_t index) {
     Vector_optimizeMemory(vector);
 }
 
+void *Vector_extractElementById(Vector *vector, size_t id) {
+    assert(id < vector->size);
+    void *ElementToBeRemoved = vector->elementsArr[id];
+    for(size_t i = id; i < vector->size - 1; i++) {
+        vector->elementsArr[i] = vector->elementsArr[i + 1];
+    }
+    (vector->size)--;
+    Vector_optimizeMemory(vector);
+
+    return ElementToBeRemoved;
+}
+
+int Vector_getElementVectorIndex(Vector *vector, void *elem) {
+    for(size_t i = 0; i < Vector_getSize(vector); i++) {
+        if(Vector_getElemById(vector, i) == elem) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void Vector_remove(Vector *v) {
     if (v->freeFunc != NULL) {
         for (size_t i = 0; i < v->size; i++) {
