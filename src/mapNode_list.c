@@ -255,7 +255,7 @@ size_t getRouteDescriptionSize(MapNodeList *list) {
             size += countDigit(Road_getAge(roadFromTo)) + 1; //"roadAge" + ";"
         }
     }
-    return size + 1;// ... + "\0"
+    return size + 1;// ... + "\0" - last";"
 }
 
 void putRouteDescription(MapNodeList *list, char string[]) {
@@ -276,12 +276,12 @@ void putRouteDescription(MapNodeList *list, char string[]) {
         if(elem) {
             nodeTo = elem->value;
             Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
-            tmp = malloc(countDigit(roadFromTo->length));
+            tmp = malloc((countDigit(roadFromTo->length) + 1) * sizeof(char));
             sprintf(tmp, "%d", roadFromTo->length);
             strcat(string, tmp);
             strcat(string, ";");
             free(tmp);
-            tmp = malloc(countDigit(Road_getAge(roadFromTo)) * sizeof(char));
+            tmp = malloc((countDigit(Road_getAge(roadFromTo)) + 1) * sizeof(char));
             sprintf(tmp, "%d", Road_getAge(roadFromTo));
             strcat(string, tmp);
             strcat(string, ";");
