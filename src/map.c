@@ -254,6 +254,68 @@ static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) 
     return isFound && isExplicit;
 }
 
+static bool dijkstraWithForbiddenRoute(Map *map, MapNode *start, MapNode *end, int parentIndex[], MapNodeList *route) {
+
+    MapNodePriorityQueue *queue = MapNodePriorityQueue_new();
+
+    for(size_t i = 0; i < MapNodeVector_getSize(map->mapNodeVector); i++) {
+        MapNode_setDistanceFromRoot(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        MapNodePriorityQueue_add(queue, MapNodeVector_getMapNodeById(map->mapNodeVector, i));
+        MapNode_setOldestRoadAge(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        parentIndex[i] = -1;
+    }
+
+    MapNodePriorityQueue_updateNode(queue, start, 0);
+    MapNode *processedNode = NULL;
+    bool isFound = false;
+    bool isExplicit = true;
+
+    while ( !MapNodePriorityQueue_isEmpty(queue) && !isFound) {
+        processedNode = MapNodePriorityQueue_popMin(queue);
+
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX && processedNode == end) {
+            isFound = true;
+        }
+
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX) {
+
+            for (size_t i = 0; i < RoadVector_getSize(processedNode->roadVector) && processedNode != end; i++) {
+                Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
+                int roadTarget = currentRoad->destination_index;
+                MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
+                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
+
+                if (!MapNodeList_isNodeIncludedInList(route, currentNode) && currentNode->distanceFromRoot >= newDistance) {
+                    int newAge = MapNode_getNewNodeOldestRoadAge(processedNode, currentRoad);
+                    if(currentNode == end) {
+                        if(newAge < end->oldestRoadAgeToMe) {
+                            isExplicit = true;
+                        }
+                        if(newAge == end->oldestRoadAgeToMe) {
+                            isExplicit = false;
+                        }
+                    }
+                    if(currentNode->distanceFromRoot > newDistance) {
+                        parentIndex[currentNode->index] = processedNode->index;
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+                        if(currentNode == end) {
+                            isExplicit = true;
+                        }
+                    }
+                    if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        parentIndex[currentNode->index] = processedNode->index;
+                    }
+                }
+            }
+        }
+    }
+    MapNodePriorityQueue_remove(queue);
+
+    return isFound && isExplicit;
+}
+
 static MapNodeList *getRoutedById(Vector *vector, size_t id) {
     for(size_t i = 0; i < Vector_getSize(vector); i++) {
         MapNodeList *route = (MapNodeList*) Vector_getElemById(vector, i);
@@ -283,6 +345,26 @@ static MapNodeList *getNewRoute(Map *map, unsigned routeId, MapNode *start, MapN
     int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
 
     if (!dijkstra(map, start, end, parentIndex)) {
+        return NULL;
+    }
+
+    MapNodeList *roadList = MapNodeList_new(routeId);
+    MapNodeList_setLength(roadList, end->distanceFromRoot);
+    MapNodeList_setOldestIncludedRoadAge(roadList, end->oldestRoadAgeToMe);
+    MapNodeList_append(roadList, start);
+
+    if(!ParentIndexToList(map, parentIndex, end->index, roadList)) {
+        MapNodeList_remove(roadList);
+        return NULL;
+    }
+
+    return roadList;
+}
+
+static MapNodeList *getNewRouteWithForbiddenRoute(Map *map, unsigned routeId, MapNode *start, MapNode *end, MapNodeList *route) {
+    int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
+
+    if (!dijkstraWithForbiddenRoute(map, start, end, parentIndex, route)) {
         return NULL;
     }
 
@@ -341,35 +423,17 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
         return false;
     }
 
-    MapNodeList *routeAttachcedToStart = getNewRoute(map, routeId, nodeToBeAdded, MapNodeList_getHeadNode(mainRoute));
-    if(!routeAttachcedToStart) {
-        return false;
-    }
-    MapNodeList *routeAttachcedToEnd = getNewRoute(map, routeId, MapNodeList_getTailNode(mainRoute), nodeToBeAdded);
+    MapNodeList *routeAttachcedToEnd = getNewRouteWithForbiddenRoute(map, routeId, MapNodeList_getTailNode(mainRoute), nodeToBeAdded, mainRoute);
     if(!routeAttachcedToEnd) {
         return false;
     }
 
-    int preference = MapNodeList_comparePreferenceOfRoutes(routeAttachcedToStart, routeAttachcedToEnd);
     int mainRouteIndexInVector = Vector_getElementVectorIndex(map->nationalRoadsVector, mainRoute);
     mainRoute = Vector_extractElementById(map->nationalRoadsVector, mainRouteIndexInVector);
 
     MapNodeList *newRoute = NULL;
-    if(preference > 0) {
-        MapNodeList_pop(routeAttachcedToStart);
-        newRoute = MapNodeList_mergeRoutes(routeAttachcedToStart, mainRoute, mainRoute->routeId);
-        MapNodeList_remove(routeAttachcedToEnd);
-    }
-    else if(preference < 0) {
-        MapNodeList_pop(mainRoute);
-        newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
-        MapNodeList_remove(routeAttachcedToStart);
-    }
-    else {
-        MapNodeList_remove(routeAttachcedToStart);
-        MapNodeList_remove(routeAttachcedToEnd);
-        return false;
-    }
+    MapNodeList_pop(mainRoute);
+    newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
     Vector_add(map->nationalRoadsVector, newRoute);
 
     return true;
