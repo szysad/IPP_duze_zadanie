@@ -166,7 +166,11 @@ bool repairRoad(Map *map, const char *city1, const char *city2, int repairYear) 
     Road *road1to2 = MapNode_getRoadFromConnectedNodes(mapNode1, mapNode2);
     Road *road2to1 = MapNode_getRoadFromConnectedNodes(mapNode2, mapNode1);
 
-    if(!road1to2 || !road2to1) {
+    if(road1to2 == NULL || road2to1 == NULL) {
+        return false;
+    }
+
+    if(Road_getAge(road1to2) > repairYear) {
         return false;
     }
 

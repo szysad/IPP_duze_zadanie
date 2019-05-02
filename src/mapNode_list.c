@@ -264,12 +264,14 @@ void putRouteDescription(MapNodeList *list, char string[]) {
     MapNode *nodeTo = NULL;
     char *tmp;
 
-    sprintf(string, "%d", countDigit(list->routeId));
+    sprintf(string, "%lu", list->routeId);
     strcat(string, ";");
     while (elem != NULL) {
         nodeFrom = elem->value;
         strcat(string, nodeFrom->city->name);
-        strcat(string, ";");
+        if(elem && elem->next) {
+            strcat(string, ";");
+        }
         elem = elem->next;
         if(elem) {
             nodeTo = elem->value;

@@ -95,7 +95,6 @@ bool MapNode_doesRoadExist(MapNode *node1, MapNode *node2) {
 Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target) {
     for(size_t i = 0; i < RoadVector_getSize(start->roadVector); i++) {
         Road *checkedRoad = RoadVector_getRoadById(start->roadVector, i);
-
         if(checkedRoad->destination_index == target->index) {
             return checkedRoad;
         }
