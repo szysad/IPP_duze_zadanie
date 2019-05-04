@@ -507,6 +507,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
             Road_setAge(MapNode_getRoadFromConnectedNodes(node2, node1), removeRoadLastRepairYear);
         }
         Vector_remove(routesThatIncludeRoad);
+        Vector_setFreeFunction(newConnections ,MapNodeList_remove);
         Vector_remove(newConnections);
         return false;
     }

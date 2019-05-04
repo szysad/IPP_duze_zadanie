@@ -21,6 +21,10 @@ Vector *Vector_new(void (*freeFunc)(void *)) {
     return v;
 }
 
+void Vector_setFreeFunction(Vector *vector, void (*freeFunction)(void *)) {
+    vector->freeFunc = freeFunction;
+}
+
 bool Vector_add(Vector *vector, void *element) {
     if(vector->size >= vector->capacity) {
         vector->elementsArr = realloc(vector->elementsArr, vector->capacity * EXPANSION_RATIO * sizeof(void *));

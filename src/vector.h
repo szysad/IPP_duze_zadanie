@@ -17,6 +17,8 @@ bool Vector_add(Vector *vector, void *element);
 
 void Vector_remove(Vector *v);
 
+void Vector_setFreeFunction(Vector *vector, void (*freeFunction)(void *));
+
 void *Vector_getElemById(Vector *vector, size_t id);
 
 void *Vector_extractElementById(Vector *vector, size_t id);

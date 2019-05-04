@@ -118,6 +118,9 @@ bool MapNodeList_areConnectedNodesIncludedInRoad(MapNodeList *list, MapNode *nod
     }
     MapNode *firstInRoute = elem->value;
     elem = elem->next;
+    if(elem == NULL) {
+        return false;
+    }
     MapNode *secondInRoute = elem->value;
     if(firstInRoute == node1) {
         return secondInRoute == node2;
