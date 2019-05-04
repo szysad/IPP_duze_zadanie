@@ -316,6 +316,68 @@ static bool dijkstraWithForbiddenRoute(Map *map, MapNode *start, MapNode *end, i
     return isFound && isExplicit;
 }
 
+static bool dijkstraWithForbiddenRouteWithException(Map *map, MapNode *start, MapNode *end, int parentIndex[], MapNodeList *route, MapNode *exception) {
+
+    MapNodePriorityQueue *queue = MapNodePriorityQueue_new();
+
+    for(size_t i = 0; i < MapNodeVector_getSize(map->mapNodeVector); i++) {
+        MapNode_setDistanceFromRoot(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        MapNodePriorityQueue_add(queue, MapNodeVector_getMapNodeById(map->mapNodeVector, i));
+        MapNode_setOldestRoadAge(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
+        parentIndex[i] = -1;
+    }
+
+    MapNodePriorityQueue_updateNode(queue, start, 0);
+    MapNode *processedNode = NULL;
+    bool isFound = false;
+    bool isExplicit = true;
+
+    while ( !MapNodePriorityQueue_isEmpty(queue) && !isFound) {
+        processedNode = MapNodePriorityQueue_popMin(queue);
+
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX && processedNode == end) {
+            isFound = true;
+        }
+
+        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX) {
+
+            for (size_t i = 0; i < RoadVector_getSize(processedNode->roadVector) && processedNode != end; i++) {
+                Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
+                int roadTarget = currentRoad->destination_index;
+                MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
+                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
+
+                if ((currentNode == exception || !MapNodeList_isNodeIncludedInList(route, currentNode)) && currentNode->distanceFromRoot >= newDistance) {
+                    int newAge = MapNode_getNewNodeOldestRoadAge(processedNode, currentRoad);
+                    if(currentNode == end) {
+                        if(newAge < end->oldestRoadAgeToMe) {
+                            isExplicit = true;
+                        }
+                        if(newAge == end->oldestRoadAgeToMe) {
+                            isExplicit = false;
+                        }
+                    }
+                    if(currentNode->distanceFromRoot > newDistance) {
+                        parentIndex[currentNode->index] = processedNode->index;
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
+                        if(currentNode == end) {
+                            isExplicit = true;
+                        }
+                    }
+                    if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
+                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
+                        parentIndex[currentNode->index] = processedNode->index;
+                    }
+                }
+            }
+        }
+    }
+    MapNodePriorityQueue_remove(queue);
+
+    return isFound && isExplicit;
+}
+
 static MapNodeList *getRoutedById(Vector *vector, size_t id) {
     for(size_t i = 0; i < Vector_getSize(vector); i++) {
         MapNodeList *route = (MapNodeList*) Vector_getElemById(vector, i);
@@ -381,6 +443,26 @@ static MapNodeList *getNewRouteWithForbiddenRoute(Map *map, unsigned routeId, Ma
     return roadList;
 }
 
+static MapNodeList *getNewRouteWithForbiddenRouteWithException(Map *map, unsigned routeId, MapNode *start, MapNode *end, MapNodeList *route, MapNode *exception) {
+    int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
+
+    if (!dijkstraWithForbiddenRouteWithException(map, start, end, parentIndex, route, exception)) {
+        return NULL;
+    }
+
+    MapNodeList *roadList = MapNodeList_new(routeId);
+    MapNodeList_setLength(roadList, end->distanceFromRoot);
+    MapNodeList_setOldestIncludedRoadAge(roadList, end->oldestRoadAgeToMe);
+    MapNodeList_append(roadList, start);
+
+    if(!ParentIndexToList(map, parentIndex, end->index, roadList)) {
+        MapNodeList_remove(roadList);
+        return NULL;
+    }
+
+    return roadList;
+}
+
 bool newRoute(Map *map, unsigned routeId, const char *city1, const char *city2) {
     if (!map || !City_isNameValid(city1) || !City_isNameValid(city2) || City_areNamesEqual(city1, city2)) {
         return false;
@@ -423,17 +505,42 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
         return false;
     }
 
-    MapNodeList *routeAttachcedToEnd = getNewRouteWithForbiddenRoute(map, routeId, MapNodeList_getTailNode(mainRoute), nodeToBeAdded, mainRoute);
-    if(!routeAttachcedToEnd) {
-        return false;
-    }
+    MapNodeList *routeAttachcedToStart = getNewRouteWithForbiddenRouteWithException(map, routeId, nodeToBeAdded, MapNodeList_getHeadNode(mainRoute), mainRoute, MapNodeList_getHeadNode(mainRoute));
 
+    MapNodeList *routeAttachcedToEnd = getNewRouteWithForbiddenRouteWithException(map, routeId, MapNodeList_getTailNode(mainRoute), nodeToBeAdded, mainRoute, MapNodeList_getTailNode(mainRoute));
+
+
+    int preference = MapNodeList_comparePreferenceOfRoutes(routeAttachcedToStart, routeAttachcedToEnd);
     int mainRouteIndexInVector = Vector_getElementVectorIndex(map->nationalRoadsVector, mainRoute);
     mainRoute = Vector_extractElementById(map->nationalRoadsVector, mainRouteIndexInVector);
 
     MapNodeList *newRoute = NULL;
-    MapNodeList_pop(mainRoute);
-    newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
+
+    if(preference > 0) {
+        MapNodeList_pop(routeAttachcedToStart);
+        newRoute = MapNodeList_mergeRoutes(routeAttachcedToStart, mainRoute, mainRoute->routeId);
+        if(routeAttachcedToEnd != NULL) {
+            MapNodeList_remove(routeAttachcedToEnd);
+        }
+    }
+    else if(preference < 0) {
+        MapNodeList_pop(mainRoute);
+        newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
+        if(routeAttachcedToStart != NULL) {
+            MapNodeList_remove(routeAttachcedToStart);
+        }
+    }
+    else {
+        if(routeAttachcedToStart != NULL) {
+            MapNodeList_remove(routeAttachcedToStart);
+        }
+        if(routeAttachcedToEnd != NULL) {
+            MapNodeList_remove(routeAttachcedToEnd);
+        }
+        Vector_add(map->nationalRoadsVector, mainRoute);
+        return false;
+    }
+
     Vector_add(map->nationalRoadsVector, newRoute);
 
     return true;
@@ -530,7 +637,6 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 
     return true;
 }
-
 
 char const* getRouteDescription(Map *map, unsigned routeId) {
     char *empty = malloc(sizeof(char));

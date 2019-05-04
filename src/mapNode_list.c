@@ -191,6 +191,17 @@ void MapNodeList_disconnectBetweenNodes(MapNodeList *list, MapNode *node1, MapNo
 }
 
 int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *route2) {
+    if(route1 == NULL || route2 == NULL) {
+        if(route1 == NULL && route2 == NULL) {
+            return 0;
+        }
+        else if(route1 != NULL) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
     if(route1->length < route2->length) {
         return 1;
     }
@@ -209,6 +220,7 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
         }
     }
 }
+
 
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId) {
     assert(!MapNodeList_isEmpty(list1));
