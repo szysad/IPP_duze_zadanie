@@ -67,14 +67,7 @@ int min(int a, int b) {
 
 int MapNode_getNewNodeOldestRoadAge(MapNode *nodeFrom, Road *roadFromTo) {
     assert(roadFromTo->buildYear != 0);
-    int roadOldestVal;
-    if(roadFromTo->lastRepairYear == 0) {
-        roadOldestVal = roadFromTo->buildYear;
-    }
-    else {
-        roadOldestVal = min(roadFromTo->buildYear, roadFromTo->lastRepairYear);
-    }
-    return min(roadOldestVal, nodeFrom->oldestRoadAgeToMe);
+    return min(roadFromTo->buildYear, nodeFrom->oldestRoadAgeToMe);
 }
 
 /* slightly faster then MapNode_getRoadFromConnectedNodes(), doesnt specify road direction */

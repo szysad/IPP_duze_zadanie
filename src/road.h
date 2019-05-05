@@ -9,7 +9,6 @@
 
 typedef struct _road {
 	int buildYear;
-	int lastRepairYear;
 	int length;
 	int destination_index;
 } Road;

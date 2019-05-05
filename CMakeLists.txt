@@ -31,14 +31,14 @@ set(SOURCE_FILES
 		src/city.h
 		src/mapNode_list.c
 		src/mapNode_list.h
-		src/mapNodePriorityQueue.h
-		src/mapNodePriorityQueue.c
 		src/mapNodeVector.c
 		src/mapNodeVector.h
 		src/vector.h
 		src/vector.c
 		src/map.h
-		src/map.c)
+		src/map.c
+		src/mapNodePriorityQueue.c
+		src/mapNodePriorityQueue.h)
 
 
 # Wskazujemy plik wykonywalny.

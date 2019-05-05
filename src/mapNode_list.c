@@ -221,7 +221,6 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
     }
 }
 
-
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId) {
     assert(!MapNodeList_isEmpty(list1));
 

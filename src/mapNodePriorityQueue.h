@@ -1,30 +1,29 @@
-#ifndef __MAPNODEPRIORITYQUEUE_H__
-#define __MAPNODEPRIORITYQUEUE_H__
+//
+// Created by szysad on 05.05.19.
+//
+
+#ifndef DROGI_MAPNODEPRIORITYQUEUE_H
+#define DROGI_MAPNODEPRIORITYQUEUE_H
 
 #include "mapNode.h"
 
 
-typedef struct _heap {
-    int capacity;
+typedef struct {
     int size;
-    MapNode **mapNodesArr;
+    int capacity;
+    MapNode **arr;
 } MapNodePriorityQueue;
 
-MapNodePriorityQueue *MapNodePriorityQueue_new(void);
+MapNodePriorityQueue *MapNodePriorityQueue_new(int size);
 
 void MapNodePriorityQueue_remove(MapNodePriorityQueue *queue);
 
-bool MapNodePriorityQueue_add(MapNodePriorityQueue *queue, MapNode *mapNode);
+void MapNodePriorityQueue_add(MapNodePriorityQueue *queue, MapNode *mapNode);
 
 void MapNodePriorityQueue_updateNode(MapNodePriorityQueue *queue, MapNode *mapNode, int val);
-
-void MapNodePriorityQueue_removeNode(MapNodePriorityQueue *queue, MapNode *mapNode);
 
 MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue);
 
 bool MapNodePriorityQueue_isEmpty(MapNodePriorityQueue *queue);
 
-/* DEVELOPMENT */
-void MapNodePriorityQueue_print(MapNodePriorityQueue *queue);
-
-#endif //__MAPNODEPRIORITYQUEUE_H__
+#endif //DROGI_MAPNODEPRIORITYQUEUE_H

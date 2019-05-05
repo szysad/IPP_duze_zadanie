@@ -16,7 +16,6 @@ Road *Road_new(int length, int age, int destination_index) {
 		return NULL;
 	}
 	road->buildYear = age;
-	road->lastRepairYear = 0;
 	road->length = length;
 	road->destination_index = destination_index;
 
@@ -36,25 +35,17 @@ bool Road_areParamsValid(int length, int age) {
 }
 
 int Road_getAge(Road* road) {
-    /*
-    if(road->lastRepairYear == 0) {
-        return road->buildYear;
-    }
-    else {
-        return min(road->buildYear, road->lastRepairYear);
-    }
-    */
     return road->buildYear;
 }
 
 /* development */
 void Road_print(Road *road) {
     printf("\t\troad buildYear: %d\n", road->buildYear);
-    if(road->lastRepairYear == 0) {
+    if(road->buildYear == 0) {
         printf("\t\troad not repaired yet\n");
     }
     else {
-        printf("\t\troad last repair year: %d\n", road->lastRepairYear);
+        printf("\t\troad last repair year: %d\n", road->buildYear);
     }
     printf("\t\troad len: %d\n", road->length);
     printf("\t\troad dest_index: %d\n", road->destination_index);
