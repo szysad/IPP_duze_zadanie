@@ -45,7 +45,7 @@ set(SOURCE_FILES
 		src/modules/list.h
 		src/modules/string.c
 		src/modules/string.h
-		)
+		src/interpreter.c src/interpreter.h src/command.c src/command.h)
 
 
 # Wskazujemy plik wykonywalny.

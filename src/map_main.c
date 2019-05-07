@@ -1,38 +1,37 @@
 #include "map.h"
 
-#include <stdlib.h>
 
-#include <assert.h>
-#include "modules/list.h"
-#include "modules/string.h"
-#include "string.h"
+#include "second_task_modules/list.h"
+#include "second_task_modules/string.h"
+#include "second_task_modules/command.h"
 
-static int dk2str(unsigned dk, char *str) {
-    int i = 3;
-    do {
-        --i;
-        str[i] = dk % 10 + '0';
-        dk /= 10;
-    } while (dk);
-    return i;
-}
-
-#define DK(_map, _dk, _descr)                           \
-  do {                                                  \
-    char const *_str = getRouteDescription(_map, _dk);  \
-    assert(_str);                                       \
-    assert(strcmp(_str, _descr) == 0);                  \
-    free((void *)_str);                                 \
-  } while (0)
-
-#define CITY_COUNT 1000
 
 int main() {
-    Map* m = newMap();
-    assert(m);
 
-    assert(addRoad(m, "a", "b", 1, 2));
+    Vector *commands = Vector_new(Command_remove);
+    /* adding commands ...
+     * .
+     * .
+     * .
+     * */
 
-    deleteMap(m);
-    return 0;
+    /* Interpreter *interpreter = Interpreter_new()
+     * Interpreter_readLine(interpreter)*/
+    char *rawInput = Interpreter_getLine(interpreter);
+    bool isCommandMatched = false;
+    Command *currentCmd = NULL;
+    for(size_t i = 0; i < Vector_getSize(commands) && !isCommandMatched; i++) {
+        Command *currentCmd = (Command*) Vector_getElemById(commands, i);
+        if(Command_doesRawInputMatchTemplate(currentCmd, rawInput)) {
+            isCommandMatched = true;
+        }
+    }
+    if(!isCommandMatched) {
+        //TODO Error handling: no command matched.
+    }
+    if(!Command_validateInput(currentCmd, rawInput)) {
+        //TODO Error handling: cant allocate memory or invalid input.
+    }
+    free(rawInput);
+    return Command_execute(currentCmd, map);
 }
