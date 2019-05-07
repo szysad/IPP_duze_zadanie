@@ -25,7 +25,11 @@ void MapNodeList_remove(void *list);
 
 void MapNodeList_print(MapNodeList *list);
 
+void MapNodeList_substituteConnWithRoute(MapNodeList *list, MapNodeList *sublist);
+
 bool isRouteIdValid(size_t routeId);
+
+void MapNodeList_putMapNodesInOrder(MapNodeList *list, MapNode **first, MapNode **second);
 
 bool MapNodeList_isEmpty(MapNodeList *list);
 
@@ -47,7 +51,9 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
 /* attaches list1->tail into list2->head, updates params */
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId);
 
-MapNode *MapNodeList_pop(MapNodeList *list);
+MapNode *MapNodeList_popTail(MapNodeList *list);
+
+MapNode *MapNodeList_popHead(MapNodeList *list);
 
 void MapNodeList_setLength(MapNodeList *list, int length);
 

@@ -40,10 +40,21 @@ MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue) {
     assert(queue->size > 0);
     int min = INT_MAX;
     int index = -1;
+    int last_age = INT_MIN;
     for(int i = 0; i < queue->capacity; i++) {
         if(queue->arr[i] != NULL && queue->arr[i]->distanceFromRoot <= min) {
-            min = queue->arr[i]->distanceFromRoot;
-            index = i;
+            if(queue->arr[i]->distanceFromRoot < min) {
+                min = queue->arr[i]->distanceFromRoot;
+                index = i;
+                if(queue->arr[i]->oldestRoadAgeToMe >= last_age) {
+                    last_age = queue->arr[i]->oldestRoadAgeToMe;
+                }
+            }
+            else if(queue->arr[i]->distanceFromRoot == min && queue->arr[i]->oldestRoadAgeToMe >= last_age) {
+                index = i;
+                last_age = queue->arr[i]->oldestRoadAgeToMe;
+                min = queue->arr[i]->distanceFromRoot;
+            }
         }
     }
     assert(index != -1);

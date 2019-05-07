@@ -70,6 +70,7 @@ bool MapNodeList_append(MapNodeList *list, MapNode *mapNode) {
     if(list->head == NULL) {
         list->head = new;
         list->tail = new;
+        (list->size)++;
         return true;
     }
     else {
@@ -88,7 +89,7 @@ void MapNodeList_remove(void *list) {
 }
 
 bool isRouteIdValid(size_t routeId) {
-    return (routeId < 999 && routeId > 0);
+    return (routeId < 1000 && routeId > 0);
 }
 
 void MapNodeList_setLength(MapNodeList *list, int length) {
@@ -137,6 +138,19 @@ MapNode *MapNodeList_getHeadNode(MapNodeList *list) {
     return list->head->value;
 }
 
+void MapNodeList_putMapNodesInOrder(MapNodeList *list, MapNode **first, MapNode **second) {
+    ListNode *tmp = list->head;
+    while (tmp != NULL && (tmp->value != *first && tmp->value != *second)) {
+        tmp = tmp->next;
+    }
+    assert(tmp != NULL);
+    if(tmp->value == *second) {
+        MapNode *tmptmp = *first;
+        *first = *second;
+        *second = tmptmp;
+    }
+}
+
 MapNode *MapNodeList_getTailNode(MapNodeList *list) {
     if(!list->tail) {
         return NULL;
@@ -148,7 +162,17 @@ bool MapNodeList_isEmpty(MapNodeList *list) {
     return (list->head == NULL);
 }
 
-MapNode *MapNodeList_pop(MapNodeList *list) {
+MapNode *MapNodeList_popHead(MapNodeList *list) {
+    assert(!MapNodeList_isEmpty(list));
+    ListNode *tmp = list->head;
+    list->head = list->head->next;
+    MapNode *poped = tmp->value;
+    free(tmp);
+    MapNodeList_updateParams(list);
+    return poped;
+}
+
+MapNode *MapNodeList_popTail(MapNodeList *list) {
     assert(!MapNodeList_isEmpty(list));
     ListNode *elem = list->head;
     ListNode *elemBefore = elem;
@@ -224,7 +248,7 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId) {
     assert(!MapNodeList_isEmpty(list1));
 
-    //MapNodeList_pop(list1);
+    //MapNodeList_popTail(list1);
 
     list1->tail->next = list2->head;
 
@@ -303,6 +327,29 @@ void putRouteDescription(MapNodeList *list, char string[]) {
         }
     }
     strcat(string, "\0");
+}
+
+void MapNodeList_substituteConnWithRoute(MapNodeList *list, MapNodeList *sublist) {
+    assert(!MapNodeList_isEmpty(list));
+    assert(MapNodeList_isNodeIncludedInList(list, MapNodeList_getTailNode(sublist)));
+    assert(sublist->size > 2);
+
+    ListNode *tmp = list->head;
+    while (tmp != NULL && tmp->value != MapNodeList_getHeadNode(sublist)) {
+        tmp = tmp->next;
+    }
+    assert(tmp->value == MapNodeList_getHeadNode(sublist));
+    ListNode *attachStart = tmp;
+    assert(tmp->next != NULL);
+    tmp = tmp->next;
+    assert(tmp->value == MapNodeList_getTailNode(sublist));
+    ListNode *attachEnd = tmp;
+    MapNodeList_popHead(sublist);
+    MapNodeList_popTail(sublist);
+    attachStart->next = sublist->head;
+    sublist->tail->next = attachEnd;
+    free(sublist);
+    MapNodeList_updateParams(list);
 }
 
 void MapNodeList_print(MapNodeList *list) {

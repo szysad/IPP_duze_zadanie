@@ -1,6 +1,7 @@
 #include "map.h"
-#include "mapNodePriorityQueue.h"
-#include "mapNode_list.h"
+#include "modules/mapNodePriorityQueue.h"
+#include "modules/mapNode_list.h"
+#include "modules/vector.h"
 #include <string.h>
 #include <assert.h>
 
@@ -94,7 +95,7 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
 		    flag = Map_addMapNode(map, newMapNode1);
 		    flag = flag && Map_addMapNode(map, newMapNode2);
             /* This assertion fails only if, OS cant provide more memory.
-             * Currently program can not remove MapNodes, so it's fatal err */
+             * Currently program can not removetmp MapNodes, so it's fatal err */
 		    assert(flag);
 		}
 
@@ -208,16 +209,9 @@ static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) 
     bool isFound = false;
     bool isExplicit = true;
 
-    //MapNodePriorityQueue_print(queue);
 
     while (!MapNodePriorityQueue_isEmpty(queue)) {
-        printf("queue size: %d\n", queue->size);
         processedNode = MapNodePriorityQueue_popMin(queue);
-        //printf("queue: \n");
-        //MapNodePriorityQueue_print(queue);
-        //printf("queue end\n");
-        printf("pulled out node:\n");
-        MapNode_print(processedNode);
 
 
         if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX && processedNode == end) {
@@ -251,69 +245,7 @@ static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) 
                             isExplicit = true;
                         }
                     }
-                    else if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
-                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
-                        parentIndex[currentNode->index] = processedNode->index;
-                    }
-                }
-            }
-        }
-    }
-    MapNodePriorityQueue_remove(queue);
-
-    return isFound && isExplicit;
-}
-
-static bool dijkstraWithForbiddenRoute(Map *map, MapNode *start, MapNode *end, int parentIndex[], MapNodeList *route) {
-
-    MapNodePriorityQueue *queue = MapNodePriorityQueue_new(map->mapNodeVector->size);
-
-    for(size_t i = 0; i < MapNodeVector_getSize(map->mapNodeVector); i++) {
-        MapNode_setDistanceFromRoot(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
-        MapNodePriorityQueue_add(queue, MapNodeVector_getMapNodeById(map->mapNodeVector, i));
-        MapNode_setOldestRoadAge(MapNodeVector_getMapNodeById(map->mapNodeVector, i), INT_MAX);
-        parentIndex[i] = -1;
-    }
-
-    MapNodePriorityQueue_updateNode(queue, start, 0);
-    MapNode *processedNode = NULL;
-    bool isFound = false;
-    bool isExplicit = true;
-
-    while ( !MapNodePriorityQueue_isEmpty(queue) && !isFound) {
-        processedNode = MapNodePriorityQueue_popMin(queue);
-
-        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX && processedNode == end) {
-            isFound = true;
-        }
-
-        if(processedNode != NULL && processedNode->distanceFromRoot != INT_MAX) {
-
-            for (size_t i = 0; i < RoadVector_getSize(processedNode->roadVector) && processedNode != end; i++) {
-                Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
-                int roadTarget = currentRoad->destination_index;
-                MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
-                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
-
-                if (!MapNodeList_isNodeIncludedInList(route, currentNode) && currentNode->distanceFromRoot >= newDistance) {
-                    int newAge = MapNode_getNewNodeOldestRoadAge(processedNode, currentRoad);
-                    if(currentNode == end) {
-                        if(newAge < end->oldestRoadAgeToMe) {
-                            isExplicit = true;
-                        }
-                        if(newAge == end->oldestRoadAgeToMe) {
-                            isExplicit = false;
-                        }
-                    }
-                    if(currentNode->distanceFromRoot > newDistance) {
-                        parentIndex[currentNode->index] = processedNode->index;
-                        updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
-                        MapNodePriorityQueue_updateNode(queue, currentNode, newDistance);
-                        if(currentNode == end) {
-                            isExplicit = true;
-                        }
-                    }
-                    if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
+                    else if(currentNode->distanceFromRoot == newDistance && newAge > currentNode->oldestRoadAgeToMe) {
                         updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
                         parentIndex[currentNode->index] = processedNode->index;
                     }
@@ -375,7 +307,7 @@ static bool dijkstraWithForbiddenRouteWithException(Map *map, MapNode *start, Ma
                             isExplicit = true;
                         }
                     }
-                    if(currentNode->distanceFromRoot == newDistance && min(newAge, currentNode->oldestRoadAgeToMe) < currentNode->oldestRoadAgeToMe) {
+                    if(currentNode->distanceFromRoot == newDistance && newAge > currentNode->oldestRoadAgeToMe) {
                         updateNodeOldestRoadAge(processedNode, currentNode, currentRoad);
                         parentIndex[currentNode->index] = processedNode->index;
                     }
@@ -417,26 +349,6 @@ static MapNodeList *getNewRoute(Map *map, unsigned routeId, MapNode *start, MapN
     int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
 
     if (!dijkstra(map, start, end, parentIndex)) {
-        return NULL;
-    }
-
-    MapNodeList *roadList = MapNodeList_new(routeId);
-    MapNodeList_setLength(roadList, end->distanceFromRoot);
-    MapNodeList_setOldestIncludedRoadAge(roadList, end->oldestRoadAgeToMe);
-    MapNodeList_append(roadList, start);
-
-    if(!ParentIndexToList(map, parentIndex, end->index, roadList)) {
-        MapNodeList_remove(roadList);
-        return NULL;
-    }
-
-    return roadList;
-}
-
-static MapNodeList *getNewRouteWithForbiddenRoute(Map *map, unsigned routeId, MapNode *start, MapNode *end, MapNodeList *route) {
-    int parentIndex[MapNodeVector_getSize(map->mapNodeVector)];
-
-    if (!dijkstraWithForbiddenRoute(map, start, end, parentIndex, route)) {
         return NULL;
     }
 
@@ -527,14 +439,14 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
     MapNodeList *newRoute = NULL;
 
     if(preference > 0) {
-        MapNodeList_pop(routeAttachcedToStart);
+        MapNodeList_popTail(routeAttachcedToStart);
         newRoute = MapNodeList_mergeRoutes(routeAttachcedToStart, mainRoute, mainRoute->routeId);
         if(routeAttachcedToEnd != NULL) {
             MapNodeList_remove(routeAttachcedToEnd);
         }
     }
     else if(preference < 0) {
-        MapNodeList_pop(mainRoute);
+        MapNodeList_popTail(mainRoute);
         newRoute = MapNodeList_mergeRoutes(mainRoute, routeAttachcedToEnd, mainRoute->routeId);
         if(routeAttachcedToStart != NULL) {
             MapNodeList_remove(routeAttachcedToStart);
@@ -605,8 +517,10 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
     /* gather information about roads that can be reconnected */
     for(size_t i = 0; i < Vector_getSize(routesThatIncludeRoad); i++) {
         MapNodeList *routeToBeEdited = (MapNodeList*) Vector_getElemById(routesThatIncludeRoad, i);
+        MapNodeList_putMapNodesInOrder(routeToBeEdited, &node1, &node2);
 
-        MapNodeList *connect = getNewRoute(map, routeToBeEdited->routeId, MapNodeList_getHeadNode(routeToBeEdited), MapNodeList_getTailNode(routeToBeEdited));
+        //connect is now connnection new connection betwwen nodes that connection has been removed
+        MapNodeList *connect = getNewRouteWithForbiddenRouteWithException(map, routeToBeEdited->routeId, node1, node2, routeToBeEdited, node2);
         canBeConnected = (connect != NULL);
         if(!canBeConnected) {
             connectionsStatus = false;
@@ -626,18 +540,30 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
         return false;
     }
     /* if reconnections are possible, make them  */
-    /* remove all routes that need to be replaced */
+    /* removetmp all routes that need to be replaced */
+    assert(Vector_getSize(routesThatIncludeRoad) == Vector_getSize(newConnections));
+    for(size_t i = 0; i < Vector_getSize(newConnections); i++) {
+        MapNodeList *routeToBeEdited = (MapNodeList*) Vector_getElemById(routesThatIncludeRoad, i);
+        MapNodeList *routeToBeInjected = (MapNodeList*) Vector_getElemById(newConnections, i);
+        MapNodeList_substituteConnWithRoute(routeToBeEdited, routeToBeInjected);
+    }
+
+    /*
     for(size_t i = 0; i < Vector_getSize(routesThatIncludeRoad); i++) {
         void *routeToBeExtractedPtr = Vector_getElemById(routesThatIncludeRoad, i);
+        //MapNodeList_injectSubRoute(routeToBeExtractedPtr, newConnections);
         int routeToBeExtractedIndex = Vector_getElementVectorIndex(map->nationalRoadsVector, routeToBeExtractedPtr);
         MapNodeList_remove(Vector_extractElementById(map->nationalRoadsVector, routeToBeExtractedIndex));
     }
+    */
 
     /* add all routes that replace old ones */
+    /*
     for(size_t i = 0; i < Vector_getSize(newConnections); i++) {
         MapNodeList *replacingRoute = Vector_getElemById(newConnections, i);
-        Vector_add(map->nationalRoadsVector, replacingRoute);
+        Vector_add(map->nationalRoadsVector, routeToBeEdited);
     }
+     */
 
     Vector_remove(newConnections);
     Vector_remove(routesThatIncludeRoad);

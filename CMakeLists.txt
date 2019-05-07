@@ -22,23 +22,30 @@ set(CMAKE_C_FLAGS_DEBUG "-g")
 # Wskazujemy pliki źródłowe.
 set(SOURCE_FILES
 		src/map_main.c
-		src/roadVector.h
-		src/roadVector.c
-		src/road.c
-		src/road.h
-		src/mapNode.c
-		src/city.c
-		src/city.h
-		src/mapNode_list.c
-		src/mapNode_list.h
-		src/mapNodeVector.c
-		src/mapNodeVector.h
-		src/vector.h
-		src/vector.c
+		src/modules/roadVector.h
+		src/modules/roadVector.c
+		src/modules/road.c
+		src/modules/road.h
+		src/modules/mapNode.c
+		src/modules/city.c
+		src/modules/city.h
+		src/modules/mapNode_list.c
+		src/modules/mapNode_list.h
+		src/modules/mapNodeVector.c
+		src/modules/mapNodeVector.h
+		src/modules/vector.h
+		src/modules/vector.c
 		src/map.h
 		src/map.c
-		src/mapNodePriorityQueue.c
-		src/mapNodePriorityQueue.h)
+		src/modules/mapNodePriorityQueue.c
+		src/modules/mapNodePriorityQueue.h
+		src/modules/command.c
+		src/modules/command.h
+		src/modules/list.c
+		src/modules/list.h
+		src/modules/string.c
+		src/modules/string.h
+		)
 
 
 # Wskazujemy plik wykonywalny.

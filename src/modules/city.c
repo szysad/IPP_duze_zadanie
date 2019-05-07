@@ -14,7 +14,7 @@ bool City_isNameValid(const char *name) {
 	}
 	int i = 0;
 	while(name[i] != '\0') {
-		if((name[i] > FORIBIDDEN_CHAR_VAL_INF && name[i] < FORIBIDDEN_CHAR_VAL_SUP) || name[i] == ';') {
+		if((name[i] > FORIBIDDEN_CHAR_VAL_INF && name[i] <= FORIBIDDEN_CHAR_VAL_SUP) || name[i] == ';') {
 			return false;
 		}
 		i++;

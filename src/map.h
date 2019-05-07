@@ -1,9 +1,9 @@
 #ifndef __MAP_DEV_H__
 #define __MAP_DEV_H__
 
-#include "mapNodeVector.h"
-#include "vector.h"
-#include "mapNode_list.h"
+#include "modules/mapNodeVector.h"
+#include "modules/vector.h"
+#include "modules/mapNode_list.h"
 
 typedef struct _map {
 	MapNodeVector *mapNodeVector;
