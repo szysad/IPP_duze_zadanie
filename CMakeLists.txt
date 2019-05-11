@@ -39,13 +39,15 @@ set(SOURCE_FILES
 		src/map.c
 		src/modules/mapNodePriorityQueue.c
 		src/modules/mapNodePriorityQueue.h
-		src/modules/command.c
-		src/modules/command.h
-		src/modules/list.c
-		src/modules/list.h
-		src/modules/string.c
-		src/modules/string.h
-		src/interpreter.c src/interpreter.h src/command.c src/command.h)
+		src/second_task_modules/command.c
+		src/second_task_modules/command.h
+		src/second_task_modules/list.c
+		src/second_task_modules/list.h
+		src/second_task_modules/string.c
+		src/second_task_modules/string.h
+		src/second_task_modules/interpreter.c
+		src/second_task_modules/interpreter.h
+        src/commands/command_addRoad.c src/commands/command_addRoad.h)
 
 
 # Wskazujemy plik wykonywalny.
