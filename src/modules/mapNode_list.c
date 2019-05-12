@@ -77,8 +77,7 @@ bool MapNodeList_append(MapNodeList *list, MapNode *mapNode) {
         (list->size)++;
         list->tail->next = new;
         list->tail = new;
-        /* at this moment not necessary */
-        //MapNodeList_updateParams(list);
+        MapNodeList_updateParams(list);
         return true;
     }
 }
@@ -350,6 +349,62 @@ void MapNodeList_substituteConnWithRoute(MapNodeList *list, MapNodeList *sublist
     sublist->tail->next = attachEnd;
     free(sublist);
     MapNodeList_updateParams(list);
+}
+
+MapNodeList *MapNodeList_newCustomList(int routeId, Vector *cities) {
+    MapNodeList *route = MapNodeList_new(routeId);
+    bool result = true;
+    if(route == NULL) {
+        return NULL;
+    }
+    for(size_t i = 0; i < Vector_getSize(cities) && result; i++) {
+        result = result && MapNodeList_append(route, (MapNode*) Vector_getElemById(cities, i));
+    }
+    if(!result) {
+        MapNodeList_remove(route);
+        return NULL;
+    }
+    return route;
+}
+
+bool MapNodeList_customizeRoute(MapNodeList *route, Vector *newParams) {
+    bool result = true;
+    if((size_t) route->size != (Vector_getSize(newParams) + 1) / 3) {
+        //TODO if vector_getSize > route->sizethen extend route insead of returing false.
+        printf("%d ? %lu", route->size, (Vector_getSize(newParams) - 1) / 3);
+        return false;
+    }
+    ListNode *elem = route->head;
+    MapNode *nodeFrom = elem->value;
+    MapNode *nodeTo = NULL;
+    size_t i = 1;
+    Road *roadFromTo;
+    Road *roadToFrom;
+    while (elem != NULL && result && i < Vector_getSize(newParams) - 3) {
+        nodeFrom = elem->value;
+        elem = elem->next;
+        if(elem) {
+            nodeTo = elem->value;
+            roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
+            roadToFrom = MapNode_getRoadFromConnectedNodes(nodeTo, nodeFrom);
+        }
+        char *nodeFromCustom = String_getRaw((String*) Vector_getElemById(newParams, i));
+        char *nodeToCustom = String_getRaw((String*) Vector_getElemById(newParams, i + 3));
+        int newRoadLen = String_toInt((String*) Vector_getElemById(newParams, i + 1));
+        int newRoadBuildYr = String_toInt((String*) Vector_getElemById(newParams, i + 2));
+
+        result = (result && strcmp(nodeFrom->city->name, nodeFromCustom) == 0);
+        result = (result && strcmp(nodeTo->city->name, nodeToCustom) == 0);
+        if(result && Road_getLength(roadFromTo) == newRoadLen && Road_getAge(roadFromTo) <= newRoadBuildYr) {
+            Road_setAge(roadFromTo, newRoadBuildYr);
+            Road_setAge(roadToFrom, newRoadBuildYr);
+        }
+        else {
+            result = false;
+        }
+        i += 3;
+    }
+    return result;
 }
 
 void MapNodeList_print(MapNodeList *list) {

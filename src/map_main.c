@@ -5,7 +5,9 @@
 #include "second_task_modules/interpreter.h"
 
 #include "commands/command_addRoad.h"
-
+#include "commands/command_repairRoad.h"
+#include "commands/command_getRouteDescription.h"
+#include "commands/command_newCustomRoute.h"
 
 int main() {
 
@@ -25,16 +27,27 @@ int main() {
         return 0;
     }
 
-    Command *cmd = Command_new(doesRawInputMatchTemplateAddRoad, validateInputsFuncAddRoad, sanitizeInputFuncAddRoad, executeAddRoad);
+    Command *cmd = Command_new(_doesRawInputMatchAddRoad, _sanitizeInputAddRoad, _validateInputsAddRoad, _executeAddRoad);
+    if(cmd == NULL || !Vector_add(commands, cmd)) {
+        goto free_all;
+    }
+    cmd = Command_new(_doesRawInputMatchRepairRoad, _sanitizeInputRepairRoad, _validateInputsRepairRoad, _executeRepairRoad);
+    if(cmd == NULL || !Vector_add(commands, cmd)) {
+        goto free_all;
+    }
+    cmd = Command_new(_doesRawInputMatchGetRouteDesc, _sanitizeInputGetRouteDesc, _validateInputsGetRouteDesc, _executeGetRouteDesc);
+    if(cmd == NULL || !Vector_add(commands, cmd)) {
+        goto free_all;
+    }
+    cmd = Command_new(_doesRawInputMatchNewCustomRoute, _sanitizeInputNewCustomRoute, _validateInputsNewCustomRoute, _executeNewCustomRoute);
     if(cmd == NULL || !Vector_add(commands, cmd)) {
         goto free_all;
     }
 
-
     String *rawInput;
     while ((rawInput = Interpreter_getLine(interpreter)) != NULL) {
         bool isCommandMatched = false;
-        int status;
+        int status = 0;
         Command *currentCmd = NULL;
         for (size_t i = 0; i < Vector_getSize(commands) && !isCommandMatched; i++) {
             currentCmd = (Command *) Vector_getElemById(commands, i);
@@ -51,11 +64,11 @@ int main() {
             printf("syntax error on line: %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
-        if (status && !Command_validateInput(currentCmd, rawInput)) {
+        if (status && Command_validateInput(currentCmd, rawInput) == 0) {
             printf("list validation error on line: %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
-        if(status && !Command_execute(currentCmd, map)) {
+        if(status && Command_execute(currentCmd, map) == 0) {
             printf("execution error in line: %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }

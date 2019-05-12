@@ -18,6 +18,8 @@ Road *Road_new(int length, int age, int destination_index);
 
 int Road_getAge(Road* road);
 
+int Road_getLength(Road *road);
+
 bool Road_areParamsValid(int length, int age);
 
 void Road_setAge(Road *road, int age);

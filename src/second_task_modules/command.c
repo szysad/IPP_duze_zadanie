@@ -9,7 +9,7 @@
 #define MEM_END -1
 
 
-Command *Command_new(int (*doesRawInputMatchTemplate)(String *), int (*validateInputsFunc)(Vector *), Vector *(*sanitizeInputFunc)(String * ), bool (*execute)(Map *, Vector *)) {
+Command *Command_new(int (*doesRawInputMatchTemplate)(String *), Vector *(*sanitizeInputFunc)(String * ), int (*validateInputsFunc)(Vector *), int (*execute)(Map *, Vector *, String **output)) {
     Command *command = malloc(sizeof(Command));
     if(command == NULL) {
         return NULL;
@@ -49,8 +49,14 @@ int Command_validateInput(Command *command, String *rawInput) {
     return true;
 }
 
-bool Command_execute(Command *command, Map *map) {
-    return command->execute(map, command->args);
+int Command_execute(Command *command, Map *map) {
+    String *output;
+    int status = command->execute(map, command->args, &output);
+    if(output != NULL) {
+        String_print(output);
+        String_remove(output);
+    }
+    return status;
 }
 
 void Command_reset(Command *command) {

@@ -47,22 +47,29 @@ set(SOURCE_FILES
 		src/second_task_modules/string.h
 		src/second_task_modules/interpreter.c
 		src/second_task_modules/interpreter.h
-        src/commands/command_addRoad.c src/commands/command_addRoad.h)
+        src/commands/command_addRoad.c
+		src/commands/command_addRoad.h
+		src/commands/command_common_functions.c
+		src/commands/command_common_functions.h
+		src/commands/command_repairRoad.c
+		src/commands/command_repairRoad.h
+		src/commands/command_getRouteDescription.c
+		src/commands/command_getRouteDescription.h src/commands/command_newCustomRoute.c src/commands/command_newCustomRoute.h)
 
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})
 
 # Dodajemy obsługę Doxygena: sprawdzamy, czy jest zainstalowany i jeśli tak to:
-#find_package(Doxygen)
-#if (DOXYGEN_FOUND)
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
 	# Wskazujemy lokalizacją pliku konfiguracyjnego i podajemy jego docelową lokalizację w folderze, gdzie następuje kompilacja.
-#    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 	# Dodajemy cel doc: użycie make doc spowoduje wywołanie doxygena z odpowiednim plikiem konfiguracyjnym w folderze kompilacji.
 	# Na wyjście zostanie wypisany odpowiedni komentarz.
-#    add_custom_target(doc
-#        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-#        COMMENT "Generating API documentation with Doxygen"
-#    )
-#endif (DOXYGEN_FOUND)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+    )
+endif (DOXYGEN_FOUND)

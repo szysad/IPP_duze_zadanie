@@ -95,4 +95,11 @@ int String_toInt(String *string);
  */
 int String_compareInts(String *string1, String *string2);
 
+/**
+ * @brief sprawdza czy napis jest pusty.
+ * @param[in] string : wskaźnik na strukturę napisu.
+ * @return true jeżeli napis jest pusty, false w przeciwnym przypadku.
+ */
+bool String_isEmpty(String *string);
+
 #endif //DROGI_STRING_H

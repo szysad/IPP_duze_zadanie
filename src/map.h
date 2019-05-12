@@ -24,6 +24,9 @@ bool extendRoute(Map *map, unsigned routeId, const char *city);
 
 bool removeRoad(Map *map, const char *city1, const char *city2);
 
+//TODO documentation.
+bool newCustomRoute(Map *map, Vector *routeParams);
+
 char const* getRouteDescription(Map *map, unsigned routeId);
 
 /* development */

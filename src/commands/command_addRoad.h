@@ -1,5 +1,5 @@
 /** @file
- * Interfejs komendy wykonującą operację addRoad na mapie.
+ * Interfejs zbioru funkcji komendy wykonującą operację addRoad na mapie.
  *
  * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
  * @date 08.05.19
@@ -16,22 +16,22 @@
 /**
  * @brief @see Command_new;
  */
-int doesRawInputMatchTemplateAddRoad(String *rawInput);
+int _doesRawInputMatchAddRoad(String *rawInput);
 
 /**
  * @brief @see Command_new;
  */
-int validateInputsFuncAddRoad(Vector *inputs);
+int _validateInputsAddRoad(Vector *inputs);
 
 /**
  * @brief @see Command_new;
  */
-Vector *sanitizeInputFuncAddRoad(String *rawInput);
+Vector *_sanitizeInputAddRoad(String *rawInput);
 
 /**
  * @brief @see Command_new;
  */
-bool executeAddRoad(Map *map, Vector *args);
+int _executeAddRoad(Map *map, Vector *args, String **output);
 
 
 #endif //DROGI_COMMAND_ADDROAD_H

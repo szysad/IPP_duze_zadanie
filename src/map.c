@@ -594,6 +594,57 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
     return string;
 }
 
+bool newCustomRoute(Map *map, Vector *routeParams) {
+    bool result = true;
+    char *cityName1 = NULL;
+    char *cityName2 = NULL;
+    int routeId = String_toInt((String*) Vector_getElemById(routeParams, 0));
+    if(!isRouteIdValid(routeId)) {
+        return false;
+    }
+    MapNodeList* existingRoute =  getRoutedById(map->nationalRoadsVector, routeId);
+    if(existingRoute != NULL) {
+        return MapNodeList_customizeRoute(existingRoute, routeParams);
+    }
+    Vector *cities = Vector_new(NULL);
+
+    for(size_t i = 1; i < Vector_getSize(routeParams) - 3 && result; i += 3) {
+        cityName1 = (char*) String_getRaw(Vector_getElemById(routeParams, i));
+        cityName2 = (char*) String_getRaw(Vector_getElemById(routeParams, i + 3));
+        int roadLen = String_toInt((String*) Vector_getElemById(routeParams, i + 1));
+        int roadBuildYr = String_toInt((String*) Vector_getElemById(routeParams, i + 2));
+
+        if(!addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
+            MapNode *city1 = Map_doesCityExist(map, cityName1);
+            MapNode *city2 = Map_doesCityExist(map, cityName2);
+            Road *problematicRoad = MapNode_getRoadFromConnectedNodes(city1, city2);
+            if(Road_getLength(problematicRoad) == roadLen && Road_getAge(problematicRoad) <= roadBuildYr) {
+                Road_setAge(problematicRoad, roadBuildYr);
+            }
+            else {
+                result = false;
+            }
+        }
+        if(result) {
+            result = result && Vector_add(cities, Map_doesCityExist(map, cityName1));
+        }
+    }
+    result = result && Vector_add(cities, Map_doesCityExist(map, cityName2));
+    if(!result) {
+        Vector_remove(cities);
+        return false;
+    }
+    MapNodeList *newRoute = MapNodeList_newCustomList(routeId, cities);
+    if(newRoute == NULL) {
+        result = false;
+    }
+    if(result && !Vector_add(map->nationalRoadsVector, newRoute)) {
+        result = false;
+    }
+    Vector_remove(cities);
+    return result;
+}
+
 void Map_print(Map *map) {
     MapNodeVector_print(map->mapNodeVector);
 }

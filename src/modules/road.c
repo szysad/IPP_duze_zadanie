@@ -13,6 +13,10 @@ Road *Road_new(int length, int age, int destination_index) {
 	return road;
 }
 
+int Road_getLength(Road *road) {
+    return road->length;
+}
+
 void Road_setAge(Road *road, int lastRepairYear) {
     road->buildYear = lastRepairYear;
 }

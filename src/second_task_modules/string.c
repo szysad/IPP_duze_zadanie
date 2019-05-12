@@ -107,3 +107,7 @@ int String_toInt(String *string) {
         return atoi(string->body);
     }
 }
+
+bool String_isEmpty(String *string) {
+    return (String_getLength(string) == 1 && String_getRaw(string)[0] == '\0');
+}

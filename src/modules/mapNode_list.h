@@ -2,6 +2,9 @@
 #define __MAPNODE_LIST_H__
 
 #include "mapNode.h"
+#include "vector.h"
+#include "../second_task_modules/string.h"
+#include "../map.h"
 
 typedef struct _listNode{
     MapNode *value;
@@ -62,5 +65,11 @@ void MapNodeList_setOldestIncludedRoadAge(MapNodeList *list, int age);
 size_t getRouteDescriptionSize(MapNodeList *list);
 
 void putRouteDescription(MapNodeList *list, char string[]);
+
+//TODO documentation
+MapNodeList *MapNodeList_newCustomList(int routeId, Vector *cities);
+
+//TODO documentation
+bool MapNodeList_customizeRoute(MapNodeList *route, Vector *newParams);
 
 #endif //__MAPNODE_LIST_H__

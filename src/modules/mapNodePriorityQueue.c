@@ -32,7 +32,9 @@ void MapNodePriorityQueue_add(MapNodePriorityQueue *queue, MapNode *mapNode) {
 }
 
 void MapNodePriorityQueue_updateNode(MapNodePriorityQueue *queue, MapNode *mapNode, int val) {
-    assert(queue->size > 0);
+    if(queue->size == 0) {
+        assert(false);
+    }
     mapNode->distanceFromRoot = val;
 }
 
