@@ -60,15 +60,22 @@ int main() {
                 goto free_all;
             }
         }
+        int status2;
         if (!isCommandMatched) {
             fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
-        if (status && Command_validateInput(currentCmd, rawInput) == 0) {
+        if(status && (status2 = Command_validateInput(currentCmd, rawInput)) < 0) {
+            goto free_all;
+        }
+        if (status && status2 == 0) {
             fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
-        if(status && Command_execute(currentCmd, map) == 0) {
+        if(status && (status2 = Command_execute(currentCmd, map)) < 0) {
+            goto free_all;
+        }
+        if(status && status2 == 0) {
             fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
         }
         Command_reset(currentCmd);
