@@ -61,23 +61,20 @@ int main() {
             }
         }
         if (!isCommandMatched) {
-            printf("syntax error on line: %lu\n", Interpreter_getCurrentLine(interpreter));
+            fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
         if (status && Command_validateInput(currentCmd, rawInput) == 0) {
-            printf("list validation error on line: %lu\n", Interpreter_getCurrentLine(interpreter));
+            fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
             status = 0;
         }
         if(status && Command_execute(currentCmd, map) == 0) {
-            printf("execution error in line: %lu\n", Interpreter_getCurrentLine(interpreter));
-            status = 0;
+            fprintf( stderr, "ERROR %lu\n", Interpreter_getCurrentLine(interpreter));
         }
         Command_reset(currentCmd);
         String_remove(rawInput);
-        if(status) {
-            Map_print(map);
-        }
     }
+
     free_all:
     Interpreter_remove(interpreter);
     deleteMap(map);

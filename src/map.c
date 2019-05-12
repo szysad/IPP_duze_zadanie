@@ -599,12 +599,8 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     char *cityName1 = NULL;
     char *cityName2 = NULL;
     int routeId = String_toInt((String*) Vector_getElemById(routeParams, 0));
-    if(!isRouteIdValid(routeId)) {
+    if(!isRouteIdValid(routeId) || getRoutedById(map->nationalRoadsVector, routeId) != NULL) {
         return false;
-    }
-    MapNodeList* existingRoute =  getRoutedById(map->nationalRoadsVector, routeId);
-    if(existingRoute != NULL) {
-        return MapNodeList_customizeRoute(existingRoute, routeParams);
     }
     Vector *cities = Vector_new(NULL);
 

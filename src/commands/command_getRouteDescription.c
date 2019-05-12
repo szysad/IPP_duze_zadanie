@@ -82,11 +82,6 @@ int _executeGetRouteDesc(Map *map, Vector *args, String **output) {
         free(desc);
         return MEM_END;
     }
-    if(String_isEmpty(result)) {
-        free(desc);
-        String_remove(result);
-        return 0;
-    }
     free(desc);
     *output = result;
     return 1;

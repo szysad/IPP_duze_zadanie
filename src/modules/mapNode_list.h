@@ -66,10 +66,16 @@ size_t getRouteDescriptionSize(MapNodeList *list);
 
 void putRouteDescription(MapNodeList *list, char string[]);
 
-//TODO documentation
+/**
+ * @brief tworzy nową drogę krajową o określonych miastach.
+ * Nowa droga krajowa będzie utworzona tak aby przechodziła przez miasta w kolejności takiej, jak miasta zostały
+ * dodane do Vektora. Aby funkcja działa poprawanie każdy odcinek drogi zawart w nowo tworzonej drodze krajowej
+ * musi być połączony drogą.
+ * @param[in] routeId : numer nowej drogi krajowej.
+ * @param[in] cities : @see Vector wskaźników na miasta przez które ma przechodzić nowa droga.
+ * @return wskaźnik na nowo utworzoną drogę krajową. NULL jeżeli nie da się utworzyć takiej drogi krajowej, lub
+ * nie udało się zaalokować pamięci.
+ */
 MapNodeList *MapNodeList_newCustomList(int routeId, Vector *cities);
-
-//TODO documentation
-bool MapNodeList_customizeRoute(MapNodeList *route, Vector *newParams);
 
 #endif //__MAPNODE_LIST_H__
