@@ -10,7 +10,6 @@
 #include "commands/command_newCustomRoute.h"
 
 int main() {
-
     Interpreter *interpreter = Interpreter_new();
     if(interpreter == NULL) {
         return 0;

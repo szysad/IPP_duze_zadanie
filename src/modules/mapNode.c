@@ -56,7 +56,7 @@ static MapNode *MapNode_getLessBranchedMapNode(MapNode *node1, MapNode *node2) {
     }
 }
 
-int min(int a, int b) {
+long int min(int a, int b) {
     if(a < b) {
         return a;
     }
@@ -95,7 +95,7 @@ Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target) {
     return NULL;
 }
 
-void MapNode_setDistanceFromRoot(MapNode *mapNode, int distance) {
+void MapNode_setDistanceFromRoot(MapNode *mapNode, unsigned distance) {
     mapNode->distanceFromRoot = distance;
 }
 

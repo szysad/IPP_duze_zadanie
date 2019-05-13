@@ -46,24 +46,24 @@ Vector *_sanitizeInputGetRouteDesc(String *rawInput) {
 int _validateInputsGetRouteDesc(Vector *inputs) {
     String *routeId = (String*)Vector_getElemById(inputs, 1);
 
-    String *intMaxStr = String_new("2147483647");
-    String *intMinStr = String_new("-2147483648");
+    String *uintMaxStr = String_putInt(UINT_MAX);
+    String *uintMinStr = String_putInt(0);
 
-    bool rez = (intMaxStr != NULL && intMinStr != NULL);
+    bool rez = (uintMaxStr != NULL && uintMinStr != NULL);
     bool memFail = false;
     if(!rez) {
         memFail = true;
     }
 
-    if(rez && String_compareInts(routeId, intMaxStr) > 0) {
+    if(rez && String_compareInts(routeId, uintMaxStr) > 0) {
         rez = false;
     }
-    if(rez && String_compareInts(routeId, intMinStr) < 0) {
+    if(rez && String_compareInts(routeId, uintMinStr) < 0) {
         rez = false;
     }
 
-    String_remove(intMaxStr);
-    String_remove(intMinStr);
+    String_remove(uintMaxStr);
+    String_remove(uintMinStr);
 
     if(memFail) {
         return MEM_END;
@@ -72,7 +72,7 @@ int _validateInputsGetRouteDesc(Vector *inputs) {
 }
 
 int _executeGetRouteDesc(Map *map, Vector *args, String **output) {
-    char *desc = (char*) getRouteDescription(map, String_toInt(Vector_getElemById(args, 1)));
+    char *desc = (char*) getRouteDescription(map, (unsigned)String_toInt(Vector_getElemById(args, 1)));
     *output = NULL;
     if(desc == NULL) {
         return MEM_END;

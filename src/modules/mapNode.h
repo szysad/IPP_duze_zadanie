@@ -9,7 +9,7 @@ typedef struct _mapNode {
 	City *city;
 	RoadVector *roadVector;
 	/* below are used for path finding algorithm */
-	int distanceFromRoot;
+    unsigned distanceFromRoot;
 	int queueIndex;
 	int oldestRoadAgeToMe;
 } MapNode;
@@ -17,11 +17,11 @@ typedef struct _mapNode {
 
 MapNode *MapNode_new(City *city);
 
-int min(int a, int b);
+long int min(int a, int b);
 
 void MapNode_remove(MapNode *mapNode);
 
-void MapNode_setDistanceFromRoot(MapNode *mapNode, int distance);
+void MapNode_setDistanceFromRoot(MapNode *mapNode, unsigned distance);
 
 void MapNode_setQueueIndex(MapNode *mapNode, int index);
 

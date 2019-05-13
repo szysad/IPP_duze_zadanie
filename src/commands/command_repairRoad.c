@@ -57,8 +57,8 @@ int _validateInputsRepairRoad(Vector *inputs) {
     if(String_equals(city1, city2)) {
         return false;
     }
-    String *intMaxStr = String_new("2147483647");
-    String *intMinStr = String_new("-2147483648");
+    String *intMaxStr = String_putInt(INT_MAX);
+    String *intMinStr = String_putInt(INT_MIN);
 
     bool rez = (intMaxStr != NULL && intMinStr != NULL);
     bool memFail = false;
@@ -87,6 +87,6 @@ int _executeRepairRoad(Map *map, Vector *args, String **output) {
     return  repairRoad(map,
                     String_getRaw((String*)Vector_getElemById(args, 1)),
                     String_getRaw((String*)Vector_getElemById(args, 2)),
-                    String_toInt((String*)Vector_getElemById(args, 3))
+                    (int) String_toInt((String*)Vector_getElemById(args, 3))
     );
 }

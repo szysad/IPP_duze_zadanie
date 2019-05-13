@@ -13,7 +13,7 @@ static ListNode *ListNode_new(MapNode *node, ListNode *next) {
 }
 
 static void MapNodeList_removeNodes(MapNodeList *l) {
-    ListNode *tmp = l->head;
+    ListNode *tmp;
     while(l->head != NULL) {
         tmp = l->head->next;
         free(l->head);
@@ -21,7 +21,7 @@ static void MapNodeList_removeNodes(MapNodeList *l) {
     }
 }
 
-MapNodeList *MapNodeList_new(size_t routeId) {
+MapNodeList *MapNodeList_new(unsigned routeId) {
     MapNodeList *new = malloc(sizeof(MapNodeList));
     if(!new) {
         return NULL;
@@ -39,11 +39,11 @@ MapNodeList *MapNodeList_new(size_t routeId) {
 void MapNodeList_updateParams(MapNodeList *list) {
     assert(!MapNodeList_isEmpty(list));
     int newOldestIncludedRoadAge = INT_MAX;
-    int newLength = 0;
+    unsigned newLength = 0;
     int newSize = 0;
 
     ListNode *elem = list->head;
-    MapNode *nodeFrom = elem->value;
+    MapNode *nodeFrom;
     MapNode *nodeTo = NULL;
     while (elem != NULL) {
         newSize++;
@@ -87,11 +87,11 @@ void MapNodeList_remove(void *list) {
     free(list);
 }
 
-bool isRouteIdValid(size_t routeId) {
+bool isRouteIdValid(unsigned routeId) {
     return (routeId < 1000 && routeId > 0);
 }
 
-void MapNodeList_setLength(MapNodeList *list, int length) {
+void MapNodeList_setLength(MapNodeList *list, unsigned length) {
     list->length = length;
 }
 
@@ -188,31 +188,6 @@ MapNode *MapNodeList_popTail(MapNodeList *list) {
     return poppedNode;
 }
 
-void MapNodeList_disconnectBetweenNodes(MapNodeList *list, MapNode *node1, MapNode *node2, MapNodeList **firstPart, MapNodeList **secondPart) {
-    /* assumption node1, node2 are connected and both are included in list */
-    assert(list->size >= 2);
-    ListNode *elem = list->head;
-    while (elem != NULL && (elem->value != node1 && elem->value != node2)) {
-        elem = elem->next;
-    }
-    assert(elem != NULL && elem->next->value != NULL);
-    MapNodeList *newRoute = MapNodeList_new(2137);
-    if((elem->value == node1 && elem->next->value == node2) || (elem->value == node2 && elem->next->value == node1)) {
-        newRoute->head = elem->next;
-        newRoute->tail = list->tail;
-        MapNodeList_updateParams(newRoute);
-        list->tail = elem;
-        list->tail->next = NULL;
-        MapNodeList_updateParams(list);
-
-        *firstPart = list;
-        *secondPart = newRoute;
-    }
-    else {
-        assert(false);
-    }
-}
-
 int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *route2) {
     if(route1 == NULL || route2 == NULL) {
         if(route1 == NULL && route2 == NULL) {
@@ -244,7 +219,7 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
     }
 }
 
-MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, size_t routeId) {
+MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, unsigned routeId) {
     assert(!MapNodeList_isEmpty(list1));
 
     //MapNodeList_popTail(list1);
@@ -262,7 +237,7 @@ MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, siz
     return newList;
 }
 
-int countDigit(size_t n)
+int countDigit(long int n)
 {
     int count = 0;
     while (n != 0) {
@@ -276,11 +251,11 @@ size_t getRouteDescriptionSize(MapNodeList *list) {
     assert(!MapNodeList_isEmpty(list));
 
     ListNode *elem = list->head;
-    MapNode *nodeFrom = list->head->value;
+    MapNode *nodeFrom;
     MapNode *nodeTo = NULL;
     size_t size = 0;
 
-    size += countDigit(list->routeId) + 1;// "routeId" + ";"
+    size += countDigit((long int) list->routeId) + 1;// "routeId" + ";"
     while (elem != NULL) {
         nodeFrom = elem->value;
         size += nodeFrom->city->length; //"cityName" - "\0" + ";"
@@ -288,8 +263,8 @@ size_t getRouteDescriptionSize(MapNodeList *list) {
         if(elem) {
             nodeTo = elem->value;
             Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
-            size += countDigit(roadFromTo->length) + 1; //"length" + ";"
-            size += countDigit(Road_getAge(roadFromTo)) + 1; //"roadAge" + ";"
+            size += countDigit((long int) roadFromTo->length) + 1; //"length" + ";"
+            size += countDigit((long int) Road_getAge(roadFromTo)) + 1; //"roadAge" + ";"
         }
     }
     return size + 1;// ... + "\0" - last";"
@@ -297,11 +272,11 @@ size_t getRouteDescriptionSize(MapNodeList *list) {
 
 void putRouteDescription(MapNodeList *list, char string[]) {
     ListNode *elem = list->head;
-    MapNode *nodeFrom = list->head->value;
+    MapNode *nodeFrom;
     MapNode *nodeTo = NULL;
     char *tmp;
 
-    sprintf(string, "%lu", list->routeId);
+    sprintf(string, "%u", list->routeId);
     strcat(string, ";");
     while (elem != NULL) {
         nodeFrom = elem->value;
@@ -314,7 +289,7 @@ void putRouteDescription(MapNodeList *list, char string[]) {
             nodeTo = elem->value;
             Road *roadFromTo = MapNode_getRoadFromConnectedNodes(nodeFrom, nodeTo);
             tmp = malloc((countDigit(roadFromTo->length) + 1) * sizeof(char));
-            sprintf(tmp, "%d", roadFromTo->length);
+            sprintf(tmp, "%u", roadFromTo->length);
             strcat(string, tmp);
             strcat(string, ";");
             free(tmp);
@@ -351,7 +326,7 @@ void MapNodeList_substituteConnWithRoute(MapNodeList *list, MapNodeList *sublist
     MapNodeList_updateParams(list);
 }
 
-MapNodeList *MapNodeList_newCustomList(int routeId, Vector *cities) {
+MapNodeList *MapNodeList_newCustomList(unsigned routeId, Vector *cities) {
     MapNodeList *route = MapNodeList_new(routeId);
     bool result = true;
     if(route == NULL) {

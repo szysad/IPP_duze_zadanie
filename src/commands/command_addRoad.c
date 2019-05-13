@@ -60,28 +60,37 @@ int _validateInputsAddRoad(Vector *inputs) {
     if(String_equals(city1, city2)) {
 		return false;
 	}
-    String *intMaxStr = String_new("2147483647");
-    String *intMinStr = String_new("-2147483648");
+    String *intMaxStr = String_putInt(INT_MAX);
+    String *intMinStr = String_putInt(INT_MIN);
+    String *uintMaxStr = String_putInt(UINT_MAX);
+    String *uintMinStr = String_putInt(0);
 
-    bool rez = (intMaxStr != NULL && intMinStr != NULL);
+    bool rez = (intMaxStr != NULL && intMinStr != NULL && uintMaxStr != NULL && uintMinStr != NULL);
     bool memFail = false;
     if(!rez) {
         memFail = true;
     }
 
-	if(rez && String_compareInts(roadLenStr, intMaxStr) > 0) {
+	if(rez && String_compareInts(roadLenStr, uintMaxStr) > 0) {
         rez = false;
+        printf("%d\n", String_compareInts(roadLenStr, uintMaxStr));
     }
-    if(rez && String_compareInts(roadLenStr, intMinStr) < 0) {
+    if(rez && String_compareInts(roadLenStr, uintMinStr) < 0) {
         rez = false;
+        printf("%d\n", rez);
     }
     if(rez && String_compareInts(roadBuildYrStr, intMaxStr) > 0) {
         rez = false;
+        printf("%d\n", rez);
     }
     if(rez && String_compareInts(roadBuildYrStr, intMinStr) < 0) {
         rez = false;
     }
 
+    printf("rez = %d\n", rez);
+
+    String_remove(uintMinStr);
+    String_remove(uintMaxStr);
 	String_remove(intMaxStr);
 	String_remove(intMinStr);
 
@@ -96,7 +105,7 @@ int _executeAddRoad(Map *map, Vector *args, String **output) {
 	return addRoad(map,
                     String_getRaw((String*)Vector_getElemById(args, 1)),
                     String_getRaw((String*)Vector_getElemById(args, 2)),
-					String_toInt((String*)Vector_getElemById(args, 3)),
-					String_toInt((String*)Vector_getElemById(args, 4))
+                   (unsigned) String_toInt((String*)Vector_getElemById(args, 3)),
+                   (int) String_toInt((String*)Vector_getElemById(args, 4))
 					);
 }

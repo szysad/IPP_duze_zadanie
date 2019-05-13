@@ -8,19 +8,19 @@
 
 
 typedef struct _road {
-	int buildYear;
-	int length;
+    int buildYear;
+	unsigned int length;
 	int destination_index;
 } Road;
 
 
-Road *Road_new(int length, int age, int destination_index);
+Road *Road_new(unsigned int length, int age, int destination_index);
 
 int Road_getAge(Road* road);
 
-int Road_getLength(Road *road);
+unsigned int Road_getLength(Road *road);
 
-bool Road_areParamsValid(int length, int age);
+bool Road_areParamsValid(unsigned int length, int age);
 
 void Road_setAge(Road *road, int age);
 

@@ -71,7 +71,7 @@ void String_print(void *string);
 bool String_equals(String *string1, String *string2);
 
 /**
- * @brief zwraca int'a zapisanego jako podany napis.
+ * @brief zwraca long int'a zapisanego jako podany napis.
  * @param[in] string : napis w stylu C, który zawiera jedynie znaki '0'-'9' ale może zaczynać się znakiem '-'
  * reprezentującym liczbę ujemną.
  * Niedozwolony jest zapis liczby wielocyfrowej zaczynającej się zerem jak i liczby reprezentującej zero
@@ -79,7 +79,15 @@ bool String_equals(String *string1, String *string2);
  * Dla napisów zawierających inne znaki zachowanie nie jest zdefiniowane.
  * @return int zapisany jako podany napis.
  */
-int String_toInt(String *string);
+long int String_toInt(String *string);
+
+/**
+ * @brief tworzy tekstową reprezentację liczby całkowitej z zakresu long int.
+ * @param[in] : liczba typu long int.
+ * @return wskaźnik na nowo utworzoną strukturę @see String reprezentującą liczbę typu long int.
+ * NULL jeżeli nie udało zaalokowac się pamięci,
+ */
+String *String_putInt(long int input);
 
 /**
  * @brief porównuje dwie liczby zapisane jako napisy.

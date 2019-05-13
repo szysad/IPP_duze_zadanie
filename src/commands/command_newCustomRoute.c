@@ -64,17 +64,14 @@ Vector *_sanitizeInputNewCustomRoute(String *rawInput) {
 }
 
 int _validateInputsNewCustomRoute(Vector *input) {
-    bool result = true;
+    bool result;
+    String *intMaxStr = String_putInt(INT_MAX);
+    String *intMinStr = String_putInt(INT_MIN);
+    String *uintMaxStr = String_putInt(UINT_MAX);
+    String *uintMinStr = String_putInt(0);
 
-    String *intMaxStr = String_new("2147483647");
-    if(intMaxStr == NULL) {
-        return MEM_END;
-    }
-    String *intMinStr = String_new("-2147483648");
-    if(intMinStr == NULL) {
-        String_remove(intMaxStr);
-        return MEM_END;
-    }
+    result = (intMaxStr != NULL && intMinStr != NULL && uintMaxStr != NULL && uintMinStr != NULL);
+
 
     /* check if there are any duplicates of cities in vector */
     for(size_t i = 1; i < Vector_getSize(input) && result; i += VECTOR_ELEM_CYCLE) {
@@ -87,10 +84,10 @@ int _validateInputsNewCustomRoute(Vector *input) {
     }
     /* check if road lengths are valid ~ range case */
     for(size_t i = 2; i < Vector_getSize(input) && result; i += VECTOR_ELEM_CYCLE ) {
-        if(String_compareInts((String*) Vector_getElemById(input, i), intMaxStr) > 0) {
+        if(String_compareInts((String*) Vector_getElemById(input, i), uintMaxStr) > 0) {
             result = false;
         }
-        if(String_compareInts((String*) Vector_getElemById(input, i), intMinStr) < 0) {
+        if(String_compareInts((String*) Vector_getElemById(input, i), uintMinStr) < 0) {
             result = false;
         }
     }
@@ -106,6 +103,8 @@ int _validateInputsNewCustomRoute(Vector *input) {
 
     String_remove(intMaxStr);
     String_remove(intMinStr);
+    String_remove(uintMaxStr);
+    String_remove(uintMinStr);
 
     return result;
 }

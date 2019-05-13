@@ -57,56 +57,45 @@ bool String_equals(String *string1, String *string2) {
     return (strcmp(string1->body, string2->body) == 0);
 }
 
+long int String_toInt(String *string) {
+    char *tmp;
+    return strtol(String_getRaw(string), &tmp, 10);
+}
+
 int String_compareInts(String *string1, String *string2) {
-    char *s1 = string1->body;
-    char *s2 = string2->body;
-    bool isS1positive = (s1[0] != '-');
-    bool isS2positive = (s2[0] != '-');
-    int absComp = 0;
-    if(!isS1positive) {
-        s1++;
-    }
-    if(!isS2positive) {
-        s2++;
-    }
-    unsigned int i;
-    for(i = 0; (s1[i] != '\0' && s2[i] != '\0'); i++) {
-        if((int)s1[i] > (int)s2[i]) {
-            absComp = 1;
-        }
-        else if((int)s1[i] < (int)s2[i]) {
-            absComp = -1;
-        }
-    }
-    if(s1[i] != '\0' && s2[i] == '\0') {
-        absComp = 1;
-    }
-    else if(s1[i] == '\0' && s2[i] != '\0') {
-        absComp = -1;
-    }
-    if(isS1positive && isS2positive) {
-        return absComp;
-    }
-    else if(isS1positive && !isS2positive) {
-        return 1;
-    }
-    else if(!isS1positive && isS2positive) {
+    int long diff = String_toInt(string1) - String_toInt(string2);
+    if (diff < 0) {
         return -1;
     }
+    else if (diff > 0) {
+        return 1;
+    }
     else {
-        return -absComp;
+        return 0;
     }
 }
 
-int String_toInt(String *string) {
-    bool isNegative = (string->body[0] == '-');
-    if(isNegative) {
-        return -atoi(string->body + 1);
+String *String_putInt(long int input) {
+    int count = 0;
+    int minusChar = (input <= 0);
+    long int tmp = input;
+    while (tmp != 0) {
+        tmp /= 10;
+        ++count;
     }
-    else {
-        return atoi(string->body);
+    char *text = malloc((count + 1 + minusChar) * sizeof(char));
+    if(text == NULL) {
+        return NULL;
     }
+    if(sprintf(text, "%ld", input) < 0) {
+        free(text);
+        return NULL;
+    }
+    String *newStr = String_new(text);
+    free(text);
+    return newStr;
 }
+
 
 bool String_isEmpty(String *string) {
     return (String_getLength(string) == 1 && String_getRaw(string)[0] == '\0');

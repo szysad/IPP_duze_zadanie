@@ -1,7 +1,7 @@
 #include "road.h"
 #include <stdlib.h>
 
-Road *Road_new(int length, int age, int destination_index) {
+Road *Road_new(unsigned int length, int age, int destination_index) {
 	Road *road = malloc(sizeof(Road));
 	if(!road) {
 		return NULL;
@@ -13,7 +13,7 @@ Road *Road_new(int length, int age, int destination_index) {
 	return road;
 }
 
-int Road_getLength(Road *road) {
+unsigned int Road_getLength(Road *road) {
     return road->length;
 }
 
@@ -25,7 +25,7 @@ void Road_remove(Road *road) {
 	free(road);
 }
 
-bool Road_areParamsValid(int length, int age) {
+bool Road_areParamsValid(unsigned int length, int age) {
     return (age != 0 && length > 0);
 }
 
@@ -42,6 +42,6 @@ void Road_print(Road *road) {
     else {
         printf("\t\troad last repair year: %d\n", road->buildYear);
     }
-    printf("\t\troad len: %d\n", road->length);
+    printf("\t\troad len: %u\n", road->length);
     printf("\t\troad dest_index: %d\n", road->destination_index);
 }

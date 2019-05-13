@@ -29,7 +29,7 @@ static MapNode *Map_doesCityExist(Map *map, const char *name) {
 	return NULL;
 }
 
-static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, size_t road_length, int road_builtYear) {
+static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, unsigned road_length, int road_builtYear) {
 	bool flag = true;
 	Road *road1to2 = Road_new(road_length, road_builtYear, node2->index);
 	Road *road2to1 = Road_new(road_length, road_builtYear, node1->index);
@@ -57,7 +57,7 @@ static void MapNode_disconnectNodes(MapNode *node1, MapNode *node2) {
 }
 
 static bool Map_addMapNode(Map *map, MapNode *mapNode) {
-	bool flag = true;
+	bool flag;
 
 	flag = MapNodeVector_add(map->mapNodeVector, mapNode, &(mapNode->index));
 	assert(mapNode->index != -1);
@@ -85,7 +85,7 @@ bool addRoad(Map *map, const char *city_name1, const char *city_name2, unsigned 
 	}
 	/* Both cities do not exist */
 	else if(!mapNode1 && !mapNode2) {
-	    bool flag = true;
+	    bool flag;
 		MapNode *newMapNode1 = MapNode_new(City_new(city_name1));
 		MapNode *newMapNode2 = MapNode_new(City_new(city_name2));
 
@@ -225,7 +225,7 @@ static bool dijkstra(Map *map, MapNode *start, MapNode *end, int parentIndex[]) 
                 int roadTarget = currentRoad->destination_index;
                 MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
 
-                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
+                unsigned newDistance = processedNode->distanceFromRoot + currentRoad->length;
 
                 if (currentNode->distanceFromRoot >= newDistance) {
                     int newAge = MapNode_getNewNodeOldestRoadAge(processedNode, currentRoad);
@@ -287,7 +287,7 @@ static bool dijkstraWithForbiddenRouteWithException(Map *map, MapNode *start, Ma
                 Road *currentRoad = RoadVector_getRoadById(processedNode->roadVector, i);
                 int roadTarget = currentRoad->destination_index;
                 MapNode *currentNode = MapNodeVector_getMapNodeById(map->mapNodeVector, roadTarget);
-                int newDistance = processedNode->distanceFromRoot + currentRoad->length;
+                unsigned newDistance = processedNode->distanceFromRoot + currentRoad->length;
 
                 if ((currentNode == exception || !MapNodeList_isNodeIncludedInList(route, currentNode)) && currentNode->distanceFromRoot >= newDistance) {
                     int newAge = MapNode_getNewNodeOldestRoadAge(processedNode, currentRoad);
@@ -500,7 +500,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
     if(!roadToBeRemoved) {
         return false;
     }
-    int removeRoadLength = roadToBeRemoved->length;
+    unsigned removeRoadLength = roadToBeRemoved->length;
     int removeRoadBuiltYear = roadToBeRemoved->buildYear;
 
     Vector *routesThatIncludeRoad = getRouteWithIncludedConnectedNodes(map, node1, node2);
@@ -511,7 +511,7 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
     }
 
     Vector *newConnections = Vector_new(NULL);
-    bool canBeConnected = true;
+    bool canBeConnected;
     bool connectionsStatus = true;
 
     /* gather information about roads that can be reconnected */
@@ -607,8 +607,8 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     for(size_t i = 1; i < Vector_getSize(routeParams) - 3 && result; i += 3) {
         cityName1 = (char*) String_getRaw(Vector_getElemById(routeParams, i));
         cityName2 = (char*) String_getRaw(Vector_getElemById(routeParams, i + 3));
-        int roadLen = String_toInt((String*) Vector_getElemById(routeParams, i + 1));
-        int roadBuildYr = String_toInt((String*) Vector_getElemById(routeParams, i + 2));
+        unsigned roadLen = (unsigned) String_toInt((String*) Vector_getElemById(routeParams, i + 1));
+        int roadBuildYr = (int) String_toInt((String*) Vector_getElemById(routeParams, i + 2));
 
         if(!addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
             MapNode *city1 = Map_doesCityExist(map, cityName1);

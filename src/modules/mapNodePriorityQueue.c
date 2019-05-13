@@ -40,7 +40,7 @@ void MapNodePriorityQueue_updateNode(MapNodePriorityQueue *queue, MapNode *mapNo
 
 MapNode *MapNodePriorityQueue_popMin(MapNodePriorityQueue *queue) {
     assert(queue->size > 0);
-    int min = INT_MAX;
+    unsigned min = UINT_MAX;
     int index = -1;
     int last_age = INT_MIN;
     for(int i = 0; i < queue->capacity; i++) {
