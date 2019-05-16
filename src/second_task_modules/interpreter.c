@@ -27,23 +27,23 @@ size_t Interpreter_getCurrentLine(Interpreter *interpreter) {
     return interpreter->currentLine;
 }
 
-void Interpreter_remove(void *interpreter1) {
-    Interpreter *interpreter = (Interpreter*) interpreter1;
-    free(interpreter);
+void Interpreter_remove(void *interpreter) {
+    Interpreter *del = (Interpreter*) interpreter;
+    free(del);
 }
 
 
 String *Interpreter_getLine(Interpreter *interpreter) {
     char *buffer;
     size_t bufferSize = INITIAL_BUFFER_SIZE;
-    bool isComment = false;
+    bool isComment;
     buffer = malloc(bufferSize * sizeof(char));
     do {
         if (getline(&buffer, &bufferSize, stdin) == EOF) {
             free(buffer);
             return NULL;
         }
-        isComment = (buffer[0] == '#');
+        isComment = (buffer[0] == '#' || buffer[0] == '\n');
         (interpreter->currentLine)++;
     } while (isComment);
 

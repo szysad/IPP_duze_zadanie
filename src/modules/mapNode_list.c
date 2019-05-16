@@ -237,14 +237,14 @@ MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, uns
     return newList;
 }
 
-int countDigit(long int n)
-{
+int countDigit(long int n) {
+    bool isNegative = (n < 0);
     int count = 0;
     while (n != 0) {
         n /= 10;
         ++count;
     }
-    return count;
+    return count + isNegative;
 }
 
 size_t getRouteDescriptionSize(MapNodeList *list) {
@@ -345,7 +345,6 @@ MapNodeList *MapNodeList_newCustomList(unsigned routeId, Vector *cities) {
 void MapNodeList_print(MapNodeList *list) {
     ListNode *elem = list->head;
     while (elem != NULL) {
-        //MapNode_print(elem->value);
         City_print(elem->value->city);
         elem = elem->next;
     }

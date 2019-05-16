@@ -49,14 +49,6 @@ char *String_getRaw(String *string);
 size_t String_getLength(String *string);
 
 /**
- * @brief konkatynuje dwa napisy w jeden.
- * @param[in,out] string : wskaźnik na napis, do którego końca zostanie doczepiony napis @see addedString.
- * @param[in,out] addedString : zostaje doczepiony na koniec napisu @see string i jego pamięć zostaje zwolniona.
- * @return true jeżeli udało zaalokować się pamięć, false w przeciwnym przypadku.
- */
-bool String_concatinate(String *string, String *addedString);
-
-/**
  * @brief wypisuje napis na standardowe wyjście.
  * @param[in] string : wskaźnik na napis do wypisania.
  */
@@ -102,12 +94,5 @@ String *String_putInt(long int input);
  * 0 jeżeli string1 i string2 reprezentują taką samą liczbę.
  */
 int String_compareInts(String *string1, String *string2);
-
-/**
- * @brief sprawdza czy napis jest pusty.
- * @param[in] string : wskaźnik na strukturę napisu.
- * @return true jeżeli napis jest pusty, false w przeciwnym przypadku.
- */
-bool String_isEmpty(String *string);
 
 #endif //DROGI_STRING_H

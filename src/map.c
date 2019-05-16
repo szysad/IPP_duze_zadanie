@@ -7,6 +7,9 @@
 
 Map* newMap(void) {
 	Map *map = malloc(sizeof(Map));
+	if(map == NULL) {
+        return NULL;
+	}
 	map->mapNodeVector = MapNodeVector_new();
 	map->nationalRoadsVector = Vector_new(MapNodeList_remove);
 
@@ -30,7 +33,7 @@ static MapNode *Map_doesCityExist(Map *map, const char *name) {
 }
 
 static bool MapNode_connectMapNodes(MapNode *node1, MapNode *node2, unsigned road_length, int road_builtYear) {
-	bool flag = true;
+	bool flag;
 	Road *road1to2 = Road_new(road_length, road_builtYear, node2->index);
 	Road *road2to1 = Road_new(road_length, road_builtYear, node1->index);
 
@@ -547,24 +550,6 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
         MapNodeList *routeToBeInjected = (MapNodeList*) Vector_getElemById(newConnections, i);
         MapNodeList_substituteConnWithRoute(routeToBeEdited, routeToBeInjected);
     }
-
-    /*
-    for(size_t i = 0; i < Vector_getSize(routesThatIncludeRoad); i++) {
-        void *routeToBeExtractedPtr = Vector_getElemById(routesThatIncludeRoad, i);
-        //MapNodeList_injectSubRoute(routeToBeExtractedPtr, newConnections);
-        int routeToBeExtractedIndex = Vector_getElementVectorIndex(map->nationalRoadsVector, routeToBeExtractedPtr);
-        MapNodeList_remove(Vector_extractElementById(map->nationalRoadsVector, routeToBeExtractedIndex));
-    }
-    */
-
-    /* add all routes that replace old ones */
-    /*
-    for(size_t i = 0; i < Vector_getSize(newConnections); i++) {
-        MapNodeList *replacingRoute = Vector_getElemById(newConnections, i);
-        Vector_add(map->nationalRoadsVector, routeToBeEdited);
-    }
-     */
-
     Vector_remove(newConnections);
     Vector_remove(routesThatIncludeRoad);
 
@@ -599,18 +584,22 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     char *cityName1 = NULL;
     char *cityName2 = NULL;
     int routeId = String_toInt((String*) Vector_getElemById(routeParams, 0));
+    /* routeId validation */
     if(!isRouteIdValid(routeId) || getRoutedById(map->nationalRoadsVector, routeId) != NULL) {
         return false;
     }
-    Vector *cities = Vector_new(NULL);
 
+    Vector *cities = Vector_new(NULL);
     for(size_t i = 1; i < Vector_getSize(routeParams) - 3 && result; i += 3) {
         cityName1 = (char*) String_getRaw(Vector_getElemById(routeParams, i));
+        result = result && City_isNameValid(cityName1);
         cityName2 = (char*) String_getRaw(Vector_getElemById(routeParams, i + 3));
+        result = result && City_isNameValid(cityName2);
         unsigned roadLen = (unsigned) String_toInt((String*) Vector_getElemById(routeParams, i + 1));
         int roadBuildYr = (int) String_toInt((String*) Vector_getElemById(routeParams, i + 2));
+        result = result && (roadBuildYr != 0);
 
-        if(!addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
+        if(result && !addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
             MapNode *city1 = Map_doesCityExist(map, cityName1);
             MapNode *city2 = Map_doesCityExist(map, cityName2);
             Road *problematicRoad = MapNode_getRoadFromConnectedNodes(city1, city2);
@@ -639,8 +628,4 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     }
     Vector_remove(cities);
     return result;
-}
-
-void Map_print(Map *map) {
-    MapNodeVector_print(map->mapNodeVector);
 }

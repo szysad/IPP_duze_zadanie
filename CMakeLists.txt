@@ -41,8 +41,6 @@ set(SOURCE_FILES
 		src/modules/mapNodePriorityQueue.h
 		src/second_task_modules/command.c
 		src/second_task_modules/command.h
-		src/second_task_modules/list.c
-		src/second_task_modules/list.h
 		src/second_task_modules/string.c
 		src/second_task_modules/string.h
 		src/second_task_modules/interpreter.c

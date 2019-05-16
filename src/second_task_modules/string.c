@@ -1,6 +1,9 @@
-//
-// Created by szysad on 05.05.19.
-//
+/** @file
+ * Implementacja interfejsu modułu string.h
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 05.05.19
+ */
 
 #include "string.h"
 #include <stdlib.h>
@@ -35,19 +38,6 @@ size_t String_getLength(String *string) {
     return string->length;
 }
 
-bool String_concatinate(String *string, String *addedString) {
-    unsigned int newLen = string->length + addedString->length - 2;
-    string->body = realloc(string->body, (newLen + 1) * sizeof(char));
-    if(string->body == NULL) {
-        return false;
-    }
-    string->length = newLen;
-    strcat(string->body, addedString->body);
-    string->body[newLen] = '\0';
-    String_remove(addedString);
-    return true;
-}
-
 void String_print(void *string) {
     String *s = (String*) string;
     printf("%s\n", s->body);
@@ -63,40 +53,46 @@ long int String_toInt(String *string) {
 }
 
 int String_compareInts(String *string1, String *string2) {
-    int long diff = String_toInt(string1) - String_toInt(string2);
-    if (diff < 0) {
-        return -1;
-    }
-    else if (diff > 0) {
+    bool isS1Negative = (String_getRaw(string1)[0] == '-');
+    bool isS2Negative = (String_getRaw(string2)[0] == '-');
+    if(!isS1Negative && isS2Negative) {
         return 1;
     }
-    else {
-        return 0;
+    else if(isS1Negative && !isS2Negative) {
+        return -1;
     }
+    char *abs1 = String_getRaw(string1) + isS1Negative;
+    char *abs2 = String_getRaw(string2) + isS2Negative;
+    int result = 0;
+    unsigned i;
+    for(i = 0; abs1[i] != '\0' && abs2[i] != '\0'; i++) {
+        if(result == 0 && (int) abs1[i] > (int) abs2[i]) {
+            result = 1;
+        }
+        else if(result == 0 && (int) abs1[i] < (int) abs2[i]) {
+            result = -1;
+        }
+    }
+    if(abs1[i] != '\0' && abs2[i] == '\0') {
+        result = 1;
+    }
+    else if(abs1[i] == '\0' && abs2[i] != '\0') {
+        result = -1;
+    }
+
+    if(isS1Negative) {
+        return -result;
+    }
+    return result;
 }
 
 String *String_putInt(long int input) {
-    int count = 0;
-    int minusChar = (input <= 0);
-    long int tmp = input;
-    while (tmp != 0) {
-        tmp /= 10;
-        ++count;
-    }
-    char *text = malloc((count + 1 + minusChar) * sizeof(char));
-    if(text == NULL) {
-        return NULL;
-    }
+    static const int LONG_INT_SIZE = 21;
+    char text[LONG_INT_SIZE];
     if(sprintf(text, "%ld", input) < 0) {
         free(text);
         return NULL;
     }
     String *newStr = String_new(text);
-    free(text);
     return newStr;
-}
-
-
-bool String_isEmpty(String *string) {
-    return (String_getLength(string) == 1 && String_getRaw(string)[0] == '\0');
 }

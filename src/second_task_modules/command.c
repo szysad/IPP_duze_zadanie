@@ -50,6 +50,7 @@ int Command_validateInput(Command *command, String *rawInput) {
 }
 
 int Command_execute(Command *command, Map *map) {
+    assert(command->isreadyToExecute);
     String *output;
     int status = command->execute(map, command->args, &output);
     if(output != NULL) {

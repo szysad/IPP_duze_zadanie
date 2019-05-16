@@ -19,6 +19,7 @@ int _doesRawInputMatchAddRoad(String *rawInput) {
 	Vector *args = preprocessInput(rawInput);
 	bool result = (args != NULL);
 	bool memFail = (args == NULL);
+
     if(result && Vector_getSize(args) != ARGS_EXPECTED) {
         result = false;
     }
@@ -73,21 +74,16 @@ int _validateInputsAddRoad(Vector *inputs) {
 
 	if(rez && String_compareInts(roadLenStr, uintMaxStr) > 0) {
         rez = false;
-        printf("%d\n", String_compareInts(roadLenStr, uintMaxStr));
     }
     if(rez && String_compareInts(roadLenStr, uintMinStr) < 0) {
         rez = false;
-        printf("%d\n", rez);
     }
     if(rez && String_compareInts(roadBuildYrStr, intMaxStr) > 0) {
         rez = false;
-        printf("%d\n", rez);
     }
     if(rez && String_compareInts(roadBuildYrStr, intMinStr) < 0) {
         rez = false;
     }
-
-    printf("rez = %d\n", rez);
 
     String_remove(uintMinStr);
     String_remove(uintMaxStr);
@@ -107,5 +103,5 @@ int _executeAddRoad(Map *map, Vector *args, String **output) {
                     String_getRaw((String*)Vector_getElemById(args, 2)),
                    (unsigned) String_toInt((String*)Vector_getElemById(args, 3)),
                    (int) String_toInt((String*)Vector_getElemById(args, 4))
-					);
+                   );
 }
