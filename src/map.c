@@ -579,6 +579,37 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
     return string;
 }
 
+static bool validate_newCustomRouteVector(Map *map, Vector *routeParams) {
+    bool result = true;
+    char *city1Name, *city2Name;
+    MapNode *city1, *city2;
+    Road *conn;
+    unsigned roadLen;
+    int roadBuildYr;
+    for(size_t i = 1; i < Vector_getSize(routeParams) - 3 && result; i += 3) {
+        city1Name = (char*) String_getRaw(Vector_getElemById(routeParams, i));
+        result = result && City_isNameValid(city1Name);
+        city2Name = (char*) String_getRaw(Vector_getElemById(routeParams, i + 3));
+        result = result && City_isNameValid(city2Name);
+        roadLen = (unsigned) String_toInt(Vector_getElemById(routeParams, i + 1));
+        roadBuildYr = (int) String_toInt(Vector_getElemById(routeParams, i + 2));
+        result = result && (roadBuildYr != 0);
+
+        if(result) {
+            city1 = Map_doesCityExist(map, city1Name);
+            city2 = Map_doesCityExist(map, city2Name);
+            if (city1 != NULL && city2 != NULL) {
+                conn = MapNode_getRoadFromConnectedNodes(city1, city2);
+                if(conn != NULL) {
+                    result = result && (Road_getLength(conn) == roadLen);
+                    result = result && (Road_getAge(conn) <= roadBuildYr);
+                }
+            }
+        }
+    }
+    return result;
+}
+
 bool newCustomRoute(Map *map, Vector *routeParams) {
     bool result = true;
     char *cityName1 = NULL;
@@ -588,27 +619,22 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     if(!isRouteIdValid(routeId) || getRoutedById(map->nationalRoadsVector, routeId) != NULL) {
         return false;
     }
-
+    /* validate vector */
+    if(!validate_newCustomRouteVector(map, routeParams)) {
+        return false;
+    }
     Vector *cities = Vector_new(NULL);
     for(size_t i = 1; i < Vector_getSize(routeParams) - 3 && result; i += 3) {
         cityName1 = (char*) String_getRaw(Vector_getElemById(routeParams, i));
-        result = result && City_isNameValid(cityName1);
         cityName2 = (char*) String_getRaw(Vector_getElemById(routeParams, i + 3));
-        result = result && City_isNameValid(cityName2);
         unsigned roadLen = (unsigned) String_toInt((String*) Vector_getElemById(routeParams, i + 1));
         int roadBuildYr = (int) String_toInt((String*) Vector_getElemById(routeParams, i + 2));
-        result = result && (roadBuildYr != 0);
 
         if(result && !addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
             MapNode *city1 = Map_doesCityExist(map, cityName1);
             MapNode *city2 = Map_doesCityExist(map, cityName2);
             Road *problematicRoad = MapNode_getRoadFromConnectedNodes(city1, city2);
-            if(Road_getLength(problematicRoad) == roadLen && Road_getAge(problematicRoad) <= roadBuildYr) {
-                Road_setAge(problematicRoad, roadBuildYr);
-            }
-            else {
-                result = false;
-            }
+            Road_setAge(problematicRoad, roadBuildYr);
         }
         if(result) {
             result = result && Vector_add(cities, Map_doesCityExist(map, cityName1));

@@ -144,10 +144,7 @@ char const* getRouteDescription(Map *map, unsigned routeId);
  * numerze, istnieje już odcinek drogi który miał być zawarty w drodze krajowej o długości innej niż
  * przewiduje nowo tworzona droga krajowa lub o roku budowy lub ostatniego remontu starszym niż przewiduje
  * nowo tworzona droga krajowa, nie udało zaalokować się pamięci.
- * W przypadku kiedy funkcja zwróciła wartość @p false z powodu innego niż to że istnieje już droga krajowa o
- * podanym numerze. Część miast i odcinków dróg zawartych w tworzonej drodze krajowej mogła zostać dodana do
- * struktury mapy, daty budowy lub ostatniego remontu części dróg należących do struktury mapy, które były
- * przewidziane w nowo tworzonej drodze krajowej mogły zostać zwiększone.
+ * W przypadku kiedy funkcja zwróciła wartość @p false, stan struktury map nie zostanie zmieniony.
  */
 bool newCustomRoute(Map *map, Vector *routeParams);
 

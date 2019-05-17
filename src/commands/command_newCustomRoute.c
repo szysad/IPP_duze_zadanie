@@ -87,7 +87,7 @@ int _validateInputsNewCustomRoute(Vector *input) {
         if(String_compareInts((String*) Vector_getElemById(input, i), uintMaxStr) > 0) {
             result = false;
         }
-        if(String_compareInts((String*) Vector_getElemById(input, i), uintMinStr) < 0) {
+        if(String_compareInts((String*) Vector_getElemById(input, i), uintMinStr) <= 0) {
             result = false;
         }
     }

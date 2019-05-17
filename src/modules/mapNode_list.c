@@ -221,11 +221,7 @@ int MapNodeList_comparePreferenceOfRoutes(MapNodeList *route1, MapNodeList *rout
 
 MapNodeList *MapNodeList_mergeRoutes(MapNodeList *list1, MapNodeList *list2, unsigned routeId) {
     assert(!MapNodeList_isEmpty(list1));
-
-    //MapNodeList_popTail(list1);
-
     list1->tail->next = list2->head;
-
     MapNodeList *newList = MapNodeList_new(routeId);
     newList->head = list1->head;
     newList->tail = list2->tail;
