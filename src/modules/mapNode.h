@@ -33,7 +33,4 @@ Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target);
 
 int MapNode_getNewNodeOldestRoadAge(MapNode *nodeFrom, Road *roadFromTo);
 
-/* development */
-void MapNode_print(MapNode *mapNode);
-
 #endif //__MAPNODE_H__

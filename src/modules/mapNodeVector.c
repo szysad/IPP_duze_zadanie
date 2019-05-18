@@ -35,25 +35,6 @@ void MapNodeVector_remove(MapNodeVector *vector) {
 	free(vector);
 }
 
-static bool MapNodeVector_optimizeVectorMemory(MapNodeVector *vector) {
-	if(vector->size > INITIAL_CAPACITY * EXPANSION_RATIO && vector->size < vector->capacity / EXPANSION_RATIO) {
-		vector->capacity /= EXPANSION_RATIO;
-		vector->mapNodeArray = realloc(vector->mapNodeArray, vector->capacity * sizeof(MapNode*));
-		return true;
-	}
-	return false;
-}
-
-void MapNodeVector_removeMapNodeByIndex(MapNodeVector *vector, size_t index) {
-	assert(index < vector->size);
-	MapNode_remove(vector->mapNodeArray[index]);
-	for(size_t i = index; i < vector->size - 1; i++) {
-		vector->mapNodeArray[i] = vector->mapNodeArray[i + 1];
-	}
-	(vector->size)--;
-	MapNodeVector_optimizeVectorMemory(vector);
-}
-
 size_t MapNodeVector_getSize(MapNodeVector *vector) {
 	return vector->size;
 }
@@ -61,12 +42,4 @@ size_t MapNodeVector_getSize(MapNodeVector *vector) {
 MapNode *MapNodeVector_getMapNodeById(MapNodeVector *vector, size_t id) {
 	assert(id < vector->size);
 	return vector->mapNodeArray[id];
-}
-
-/* development */
-void MapNodeVector_print(MapNodeVector *mapNodeVector) {
-    for(size_t i = 0; i < MapNodeVector_getSize(mapNodeVector); i++) {
-        printf("node %ld\n", i);
-        MapNode_print(MapNodeVector_getMapNodeById(mapNodeVector, i));
-    }
 }

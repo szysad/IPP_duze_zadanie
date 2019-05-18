@@ -1,7 +1,3 @@
-//
-// Created by szysad on 05.05.19.
-//
-
 #include "mapNodePriorityQueue.h"
 
 MapNodePriorityQueue *MapNodePriorityQueue_new(int size) {

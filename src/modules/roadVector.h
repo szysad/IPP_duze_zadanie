@@ -35,7 +35,4 @@ size_t RoadVector_getSize(RoadVector *vector);
 
 Road *RoadVector_getRoadById(RoadVector *vector, size_t id);
 
-void RoadVector_print(RoadVector *roadVector);
-
-
 #endif //__ROADVECTOR_H__

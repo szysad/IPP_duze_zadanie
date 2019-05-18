@@ -49,8 +49,3 @@ void City_remove(City *city) {
 	free(city->name);
 	free(city);
 }
-
-void City_print(City *city) {
-    printf("\tcity: %s\n", city->name);
-    printf("\tname len: %ld\n", city->length);
-}

@@ -26,6 +26,4 @@ void Road_setAge(Road *road, int age);
 
 void Road_remove(Road *road);
 
-void Road_print(Road *road);
-
 #endif //__ROAD_H__

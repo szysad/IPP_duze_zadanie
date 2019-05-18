@@ -1,18 +1,14 @@
-//
-// Created by szysad on 05.05.19.
-//
-
 #ifndef DROGI_MAPNODEPRIORITYQUEUE_H
 #define DROGI_MAPNODEPRIORITYQUEUE_H
 
 #include "mapNode.h"
-
 
 typedef struct {
     int size;
     int capacity;
     MapNode **arr;
 } MapNodePriorityQueue;
+
 
 MapNodePriorityQueue *MapNodePriorityQueue_new(int size);
 

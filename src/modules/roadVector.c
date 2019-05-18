@@ -78,11 +78,3 @@ int RoadVector_getRoadIndexInVector(RoadVector *vector, Road *road) {
     }
     return -1;
 }
-
-/* development */
-void RoadVector_print(RoadVector *roadVector) {
-    for(size_t i = 0; i < roadVector->size; i++) {
-        printf("\troad %ld:\n", i);
-        Road_print(roadVector->roadArray[i]);
-    }
-}

@@ -29,15 +29,6 @@ void MapNode_remove(MapNode *mapNode) {
 	free(mapNode);
 }
 
-void MapNode_print(MapNode *mapNode) {
-	printf("\tindex: %d\n", mapNode->index);
-	printf("\tdistance from root: %d\n", mapNode->distanceFromRoot);
-	printf("\tqueue index: %d\n", mapNode->queueIndex);
-	printf("\toldest road age to me: %d\n", mapNode->oldestRoadAgeToMe);
-	City_print(mapNode->city);
-	RoadVector_print(mapNode->roadVector);
-}
-
 static MapNode *MapNode_getMoreBranchedMapNode(MapNode *node1, MapNode *node2) {
     if(RoadVector_getSize(node1->roadVector) < RoadVector_getSize(node2->roadVector)) {
         return node2;

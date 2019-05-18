@@ -32,16 +32,3 @@ bool Road_areParamsValid(unsigned int length, int age) {
 int Road_getAge(Road* road) {
     return road->buildYear;
 }
-
-/* development */
-void Road_print(Road *road) {
-    printf("\t\troad buildYear: %d\n", road->buildYear);
-    if(road->buildYear == 0) {
-        printf("\t\troad not repaired yet\n");
-    }
-    else {
-        printf("\t\troad last repair year: %d\n", road->buildYear);
-    }
-    printf("\t\troad len: %u\n", road->length);
-    printf("\t\troad dest_index: %d\n", road->destination_index);
-}

@@ -26,8 +26,6 @@ bool MapNodeList_append(MapNodeList *list, MapNode *mapNode);
 
 void MapNodeList_remove(void *list);
 
-void MapNodeList_print(MapNodeList *list);
-
 void MapNodeList_substituteConnWithRoute(MapNodeList *list, MapNodeList *sublist);
 
 bool isRouteIdValid(unsigned routeId);
@@ -56,7 +54,6 @@ MapNode *MapNodeList_popTail(MapNodeList *list);
 
 MapNode *MapNodeList_popHead(MapNodeList *list);
 
-void MapNodeList_setLength(MapNodeList *list, unsigned length);
 void MapNodeList_setLength(MapNodeList *list, unsigned length);
 
 void MapNodeList_setOldestIncludedRoadAge(MapNodeList *list, int age);

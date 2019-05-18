@@ -8,7 +8,7 @@ validate_road_id () {
 			return
 	fi
 	let result
-	if [ $1 -ge 1 -a $1 -le 1000 ]
+	if [ $1 -ge 1 -a $1 -le 999 ]
 		then result=1
 	else
 		result=0

@@ -337,13 +337,3 @@ MapNodeList *MapNodeList_newCustomList(unsigned routeId, Vector *cities) {
     }
     return route;
 }
-
-void MapNodeList_print(MapNodeList *list) {
-    ListNode *elem = list->head;
-    while (elem != NULL) {
-        City_print(elem->value->city);
-        elem = elem->next;
-    }
-    printf("oldest Included Road Age: %d\n", list->oldestIncludedRoadAge);
-    printf("length: %d\n", list->length);
-}
