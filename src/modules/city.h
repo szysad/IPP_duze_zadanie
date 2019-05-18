@@ -9,6 +9,7 @@ typedef struct _city {
     char *name;
 } City;
 
+
 City *City_new(const char *name);
 
 void City_remove(City *city);
