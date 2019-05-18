@@ -20,24 +20,12 @@ int _doesRawInputMatchAddRoad(String *rawInput) {
 	bool result = (args != NULL);
 	bool memFail = (args == NULL);
 
-    if(result && Vector_getSize(args) != ARGS_EXPECTED) {
-        result = false;
-    }
-    if(result && strcmp(KEYWORD, (char*)Vector_getElemById(args, 0)) != 0) {
-        result = false;
-    }
-    if(result && !City_isNameValid((char*)Vector_getElemById(args, 1))) {
-        result = false;
-    }
-    if(result && !City_isNameValid((char*)Vector_getElemById(args, 2))) {
-        result = false;
-    }
-    if(result && !isNumeric((char*)Vector_getElemById(args, 3))) {
-        result = false;
-    }
-    if(result && !isNumeric((char*)Vector_getElemById(args, 4))) {
-        result = false;
-    }
+	result = result && (Vector_getSize(args) == ARGS_EXPECTED);
+    result = result && (strcmp(KEYWORD, (char*) Vector_getElemById(args, 0)) == 0);
+    result = result && City_isNameValid((char*) Vector_getElemById(args, 1));
+    result = result && City_isNameValid((char*) Vector_getElemById(args, 2));
+    result = result && isNumeric((char*) Vector_getElemById(args, 3));
+    result = result && isNumeric((char*) Vector_getElemById(args, 4));
 
     recoverInput(rawInput);
     Vector_remove(args);
@@ -89,7 +77,6 @@ int _validateInputsAddRoad(Vector *inputs) {
     String_remove(uintMaxStr);
 	String_remove(intMaxStr);
 	String_remove(intMinStr);
-
 	if(memFail) {
         return MEM_END;
 	}

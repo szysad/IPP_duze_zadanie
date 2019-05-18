@@ -633,8 +633,10 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
         if(result && !addRoad(map, cityName1, cityName2, roadLen, roadBuildYr)) {
             MapNode *city1 = Map_doesCityExist(map, cityName1);
             MapNode *city2 = Map_doesCityExist(map, cityName2);
-            Road *problematicRoad = MapNode_getRoadFromConnectedNodes(city1, city2);
-            Road_setAge(problematicRoad, roadBuildYr);
+            Road *problematicRoad1to2 = MapNode_getRoadFromConnectedNodes(city1, city2);
+            Road *problematicRoad2to1 = MapNode_getRoadFromConnectedNodes(city2, city1);
+            Road_setAge(problematicRoad1to2, roadBuildYr);
+            Road_setAge(problematicRoad2to1, roadBuildYr);
         }
         if(result) {
             result = result && Vector_add(cities, Map_doesCityExist(map, cityName1));

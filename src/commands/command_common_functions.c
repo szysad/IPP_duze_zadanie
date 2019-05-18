@@ -52,7 +52,7 @@ void recoverInput(String *inputStr) {
 bool isNumeric(const char *input) {
     bool isNegative = (input[0] == '-');
     const char *inputTmp = input + isNegative;
-    if(inputTmp[isNegative] == '\0') {
+    if(inputTmp[0] == '\0') {
         return false;
     }
     if(inputTmp[0] == '0' && (isNegative || inputTmp[1] != '\0')) {
