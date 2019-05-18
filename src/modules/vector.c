@@ -17,7 +17,6 @@ Vector *Vector_new(void (*freeFunc)(void *)) {
     v->size = 0;
     v->capacity = INITIAL_CAPACITY;
     v->freeFunc = freeFunc;
-
     return v;
 }
 

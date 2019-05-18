@@ -11,6 +11,7 @@ typedef struct {
     void (*freeFunc)(void *);
 } Vector;
 
+
 Vector *Vector_new(void (*freeFunc)(void *));
 
 bool Vector_add(Vector *vector, void *element);
