@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja struktury drogi krajowej.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
 #include "mapNode_list.h"
 #include <string.h>
 

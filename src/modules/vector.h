@@ -1,19 +1,39 @@
+/** @file
+ * Interfejs struktury generycznego Vektora.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
 #include <stddef.h>
 #include <stdbool.h>
 
+/**
+ * struktur vectora.
+ */
 typedef struct {
-    void **elementsArr;
-    size_t capacity;
-    size_t size;
-    void (*freeFunc)(void *);
+    void **elementsArr; ///< talica elemtntów.
+    size_t capacity; ///< rozmiar vectora.
+    size_t size; ///< ilość elementów.
+    void (*freeFunc)(void *); ///< funkcja zwalaniająca pamięć.
 } Vector;
 
-
+/**
+ * @brief tworzy nowy pusty wektor.
+ * @param freeFunc : wskaźnik na funkcję zwalniająca pamięć elementów.
+ * @return wskaźnik na utworzony wektor, NULL jeżeli nie udało zaalokować się pamięci.
+ */
 Vector *Vector_new(void (*freeFunc)(void *));
 
+/**
+ * @brief dodaje element do tablicy.
+ * @param vector : wskaźnik na vector.
+ * @param element : wskaźnik na element.
+ * @return true jeżeli udało się dodać, false jeżelni nie udało zaalokować się pamięci.
+ */
 bool Vector_add(Vector *vector, void *element);
 
 void Vector_remove(Vector *v);

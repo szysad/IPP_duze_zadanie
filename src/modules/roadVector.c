@@ -1,3 +1,11 @@
+/** @file
+ * Implementacja struktury Vektora dróg w strukturze mapy.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
+
 #include <stdbool.h>
 #include <assert.h>
 #include "roadVector.h"

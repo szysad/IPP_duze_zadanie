@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja struktury nazwy miasta.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
 #include "city.h"
 #include <stdlib.h>
 #include <string.h>

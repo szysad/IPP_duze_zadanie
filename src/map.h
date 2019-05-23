@@ -1,3 +1,11 @@
+/** @file
+* Interfejs klasy przechowującej mapę dróg krajowych.
+*
+* @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+* @copyright Uniwersytet Warszawski
+* @date 20.03.2019
+*/
+
 #ifndef __MAP_DEV_H__
 #define __MAP_DEV_H__
 

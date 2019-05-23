@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja struktury Vektora węzłów struktury mapy krajowej.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
 #include <assert.h>
 #include "mapNodeVector.h"
 

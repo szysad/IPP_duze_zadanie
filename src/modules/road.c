@@ -1,3 +1,11 @@
+/** @file
+ * Implementacja struktury odcinka drogi w strukturze mapy.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
+
 #include "road.h"
 #include <stdlib.h>
 

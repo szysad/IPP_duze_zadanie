@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja struktury węzła strukury mapy.
+ *
+ * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+ * @date 06.05.19
+ */
+
 #include "mapNode.h"
 #include <stdio.h>
 
@@ -13,7 +20,6 @@ MapNode *MapNode_new(City *city) {
 	}
 	mapNode->index = INITIAL_INDEX;
     mapNode->distanceFromRoot = INITIAL_INDEX;
-    mapNode->queueIndex = INITIAL_INDEX;
 	mapNode->city = city;
     mapNode->oldestRoadAgeToMe = INT_MAX;
 	mapNode->roadVector = RoadVector_new();
@@ -88,10 +94,6 @@ Road *MapNode_getRoadFromConnectedNodes(MapNode *start, MapNode *target) {
 
 void MapNode_setDistanceFromRoot(MapNode *mapNode, unsigned distance) {
     mapNode->distanceFromRoot = distance;
-}
-
-void MapNode_setQueueIndex(MapNode *mapNode, int index) {
-    mapNode->queueIndex = index;
 }
 
 void MapNode_setOldestRoadAge(MapNode *mapNode, int age) {

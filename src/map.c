@@ -1,3 +1,11 @@
+/** @file
+* Implementacja klasy przechowującej mapę dróg krajowych.
+*
+* @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
+* @copyright Uniwersytet Warszawski
+* @date 20.03.2019
+*/
+
 #include "map.h"
 #include "modules/mapNodePriorityQueue.h"
 #include "modules/mapNode_list.h"
