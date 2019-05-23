@@ -7,6 +7,7 @@
 #include "commands/command_repairRoad.h"
 #include "commands/command_getRouteDescription.h"
 #include "commands/command_newCustomRoute.h"
+#include "commands/command_newRoute.h"
 
 #define ADD_COMMAND(vector, doesRowInputMatch, sanitizeInput, validateInput, execute) {\
 	Command *cmd = Command_new(doesRowInputMatch, sanitizeInput, validateInput, execute);\
@@ -36,6 +37,7 @@ int main() {
 	ADD_COMMAND(commands, _doesRawInputMatchRepairRoad, _sanitizeInputRepairRoad, _validateInputsRepairRoad, _executeRepairRoad)
 	ADD_COMMAND(commands,_doesRawInputMatchGetRouteDesc, _sanitizeInputGetRouteDesc, _validateInputsGetRouteDesc, _executeGetRouteDesc)
 	ADD_COMMAND(commands, _doesRawInputMatchNewCustomRoute, _sanitizeInputNewCustomRoute, _validateInputsNewCustomRoute, _executeNewCustomRoute)
+	ADD_COMMAND(commands, _doesRawInputMatchNewRoute, _sanitizeInputNewRoute, _validateInputsNewRoute, _executeNewRoute)
 
 	String *rawInput;
 	while ((rawInput = Interpreter_getLine(interpreter)) != NULL) {

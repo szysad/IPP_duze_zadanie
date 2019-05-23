@@ -18,16 +18,13 @@ int _doesRawInputMatchNewCustomRoute(String *rawInput) {
     bool result = (args != NULL);
     bool memFail = (args == NULL);
     if(memFail) {
+        recoverInput(rawInput);
         return MEM_END;
     }
-    if(Vector_getSize(args) < MINIMUM_ARGS_EXPECTED) {
-        Vector_remove(args);
-        return 0;
-    }
-    if(!isNumeric((char*)Vector_getElemById(args, 0))) {
-        Vector_remove(args);
-        return 0;
-    }
+
+    result = result && (Vector_getSize(args) >= MINIMUM_ARGS_EXPECTED);
+    result = result && isNumeric((char*) Vector_getElemById(args, 0));
+
     /* starting from i = 1, because we exclude first param which is routeId */
     int counter = 0;
     for(size_t i = 1; i < Vector_getSize(args) && result; i++) {

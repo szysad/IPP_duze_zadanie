@@ -15,11 +15,9 @@ static const char *KEYWORD = "addRoad";
 
 
 int _doesRawInputMatchAddRoad(String *rawInput) {
-
 	Vector *args = preprocessInput(rawInput);
 	bool result = (args != NULL);
 	bool memFail = (args == NULL);
-
 	result = result && (Vector_getSize(args) == ARGS_EXPECTED);
     result = result && (strcmp(KEYWORD, (char*) Vector_getElemById(args, 0)) == 0);
     result = result && City_isNameValid((char*) Vector_getElemById(args, 1));
