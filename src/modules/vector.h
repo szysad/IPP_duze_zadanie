@@ -50,4 +50,12 @@ bool Vector_isEmpty(Vector *vector);
 
 size_t Vector_getSize(Vector *v);
 
+/**
+ * @brief usuwa element z wektora.
+ * @param[in,out] v : wskaźnik na strukturę wektora.
+ * @param[in] elem : wskaźnik na element która ma być z wektora usunięty.
+ * @return @p true jeżeli udało usunąć się element z wektora. @p false jeżeli element do wektora nie należy.
+ */
+bool Vector_removeElement(Vector *v, void *elem);
+
 #endif //__VECTOR_H__

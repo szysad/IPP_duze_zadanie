@@ -54,7 +54,7 @@ set(SOURCE_FILES
 		src/commands/command_getRouteDescription.c
 		src/commands/command_getRouteDescription.h
 		src/commands/command_newCustomRoute.c
-		src/commands/command_newCustomRoute.h src/commands/command_newRoute.c src/commands/command_newRoute.h)
+		src/commands/command_newCustomRoute.h src/commands/command_newRoute.c src/commands/command_newRoute.h src/commands/command_extendRoute.c src/commands/command_extendRoute.h src/commands/command_removeRoad.c src/commands/command_removeRoad.h src/commands/command_removeRoute.c src/commands/command_removeRoute.h)
 
 
 # Wskazujemy plik wykonywalny.

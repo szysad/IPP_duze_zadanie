@@ -665,3 +665,14 @@ bool newCustomRoute(Map *map, Vector *routeParams) {
     Vector_remove(cities);
     return result;
 }
+
+bool removeRoute(Map *map, unsigned routeId) {
+    if(!isRouteIdValid(routeId)) {
+        return false;
+    }
+    MapNodeList *route = getRoutedById(map->nationalRoadsVector, routeId);
+    if(route == NULL) {
+        return false;
+    }
+    return Vector_removeElement(map->nationalRoadsVector, route);
+}

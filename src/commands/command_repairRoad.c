@@ -1,11 +1,11 @@
-#include <zconf.h>
-
 /** @file
  * Implementacja zbioru funkcji komendy wykonującą operację repairRoad na mapie.
 
  * @author Szymon Sadkowski <ss406325@students.mimuw.edu.pl>
  * @date 11.05.19
  */
+
+#include <zconf.h>
 
 static const size_t ARGS_EXPECTED = 4;
 static const int MEM_END = -1;

@@ -156,4 +156,14 @@ char const* getRouteDescription(Map *map, unsigned routeId);
  */
 bool newCustomRoute(Map *map, Vector *routeParams);
 
+/**
+ * @brief usuwa z mapy drogę krajową o podanym numerze.
+ * @param[in,out] map : wskaźnik na strukturę mapy.
+ * @param[in] routeId : numer drogi krajowej.
+ * @return @p true, jeżeli droga krajowa została usunięta ze struktury mapy.
+ * @p false, jeżeli z powodu błedu nie udało usunąć się drogi krajowej:
+ * podany numer jest niepoprawny, nie istnieje droga krajowa o padanym numerze.
+ */
+bool removeRoute(Map *map, unsigned routeId);
+
 #endif //__MAP_DEV_H__

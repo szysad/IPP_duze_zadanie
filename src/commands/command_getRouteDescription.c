@@ -1,5 +1,3 @@
-#include <zconf.h>
-
 /** @file
  * Implementacja zbioru funkcji komendy wykonującą operację getRouteDescription na mapie.
  *
@@ -7,6 +5,7 @@
  * @date 11.05.19
  */
 
+#include <zconf.h>
 
 static const size_t ARGS_EXPECTED = 2;
 static const int MEM_END = -1;

@@ -108,3 +108,12 @@ void Vector_remove(Vector *v) {
     free(v->elementsArr);
     free(v);
 }
+
+bool Vector_removeElement(Vector *v, void *elem) {
+    int elemIndex = Vector_getElementVectorIndex(v, elem);
+    if(elemIndex == -1) {
+        return false;
+    }
+    Vector_removeElemByIndex(v, elemIndex);
+    return true;
+}
