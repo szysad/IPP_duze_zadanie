@@ -41,11 +41,11 @@ typedef struct {
  * @return wskaźnik na nowo utworzoną strukturę komendy, lub NULL jeżeli nie udało zaalokować się pamięci.
  */
 Command *Command_new(
-                    int (*doesRawInputMatchTemplate)(String *rawInput),
-                    Vector *(*sanitizeInputFunc)(String *rawInput),
-                    int (*validateInputsFunc)(Vector *inputs),
-                    int (*execute)(Map *map, Vector *args, String **output)
-                    );
+					int (*doesRawInputMatchTemplate)(String *rawInput),
+					Vector *(*sanitizeInputFunc)(String *rawInput),
+					int (*validateInputsFunc)(Vector *inputs),
+					int (*execute)(Map *map, Vector *args, String **output)
+					);
 
 /**
  * @brief sprawdza czy składnia wiersza z wejścia pasuje dla komendy implementującą tą funkcję.

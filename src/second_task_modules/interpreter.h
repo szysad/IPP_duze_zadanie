@@ -17,7 +17,7 @@
  * Struktura reprezentująca interpreter.
  */
 typedef struct {
-    size_t currentLine; ///< linia z której interpreter czyta dane.
+	size_t currentLine; ///< linia z której interpreter czyta dane.
 } Interpreter;
 
 /**

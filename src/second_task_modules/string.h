@@ -16,8 +16,8 @@
  * Napis to tablica znaków, która zna swój rozmiar.
  */
 typedef struct {
-    char *body; ///< tablica znaków.
-    size_t length; ///< długosć napisu.
+	char *body; ///< tablica znaków.
+	size_t length; ///< długosć napisu.
 } String;
 
 /**

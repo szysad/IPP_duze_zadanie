@@ -22,11 +22,11 @@ Road *Road_new(unsigned int length, int age, int destination_index) {
 }
 
 unsigned int Road_getLength(Road *road) {
-    return road->length;
+	return road->length;
 }
 
 void Road_setAge(Road *road, int lastRepairYear) {
-    road->buildYear = lastRepairYear;
+	road->buildYear = lastRepairYear;
 }
 
 void Road_remove(Road *road) {
@@ -34,9 +34,9 @@ void Road_remove(Road *road) {
 }
 
 bool Road_areParamsValid(unsigned int length, int age) {
-    return (age != 0 && length > 0);
+	return (age != 0 && length > 0);
 }
 
 int Road_getAge(Road* road) {
-    return road->buildYear;
+	return road->buildYear;
 }

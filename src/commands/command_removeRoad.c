@@ -14,32 +14,32 @@ static const int MEM_END = -1;
 static const char *KEYWORD = "removeRoad";
 
 int _doesRawInputMatchRemoveRoad(String *rawInput) {
-    Vector *args = preprocessInput(rawInput);
-    bool result = (args != NULL);
-    bool memFail = (args == NULL);
-    result = result && (Vector_getSize(args) == ARGS_EXPECTED);
-    result = result && (strcmp(KEYWORD, (char*) Vector_getElemById(args, 0)) == 0);
-    result = result && City_isNameValid((char*) Vector_getElemById(args, 1));
-    result = result && City_isNameValid((char*) Vector_getElemById(args, 2));
-    recoverInput(rawInput);
-    Vector_remove(args);
-    if(memFail) {
-        return MEM_END;
-    }
-    return result;
+	Vector *args = preprocessInput(rawInput);
+	bool result = (args != NULL);
+	bool memFail = (args == NULL);
+	result = result && (Vector_getSize(args) == ARGS_EXPECTED);
+	result = result && (strcmp(KEYWORD, (char*) Vector_getElemById(args, 0)) == 0);
+	result = result && City_isNameValid((char*) Vector_getElemById(args, 1));
+	result = result && City_isNameValid((char*) Vector_getElemById(args, 2));
+	recoverInput(rawInput);
+	Vector_remove(args);
+	if(memFail) {
+		return MEM_END;
+	}
+	return result;
 }
 
 Vector *_sanitizeInputRemoveRoad(String *rawInput) {
-    return _sanitizeInputDefault(rawInput);
+	return _sanitizeInputDefault(rawInput);
 }
 
 int _validateInputsRemoveRoad(Vector *inputs) {
-    return 1;
+	return 1;
 }
 
 int _executeRemoveRoad(Map *map, Vector *args, String **output) {
-    *output = NULL;
-    const char* city1 = String_getRaw((String*) Vector_getElemById(args, 1));
-    const char* city2 = String_getRaw((String*) Vector_getElemById(args, 2));
-    return removeRoad(map, city1, city2);
+	*output = NULL;
+	const char* city1 = String_getRaw((String*) Vector_getElemById(args, 1));
+	const char* city2 = String_getRaw((String*) Vector_getElemById(args, 2));
+	return removeRoad(map, city1, city2);
 }

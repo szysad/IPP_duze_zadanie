@@ -11,9 +11,9 @@
 #include "mapNode.h"
 
 typedef struct {
-    int size;
-    int capacity;
-    MapNode **arr;
+	int size;
+	int capacity;
+	MapNode **arr;
 } MapNodePriorityQueue;
 
 /**

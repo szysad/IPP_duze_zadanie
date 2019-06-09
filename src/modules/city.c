@@ -48,7 +48,7 @@ City *City_new(const char *name) {
 }
 
 bool City_areNamesEqual(const char *name1, const char *name2) {
-    return strcmp(name1, name2) == 0;
+	return strcmp(name1, name2) == 0;
 }
 
 void City_remove(City *city) {

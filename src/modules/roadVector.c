@@ -19,7 +19,7 @@ static const size_t EXPANSION_RATIO = 2;
 RoadVector *RoadVector_new() {
 	RoadVector *newVector = malloc(sizeof(RoadVector));
 	if(newVector == NULL) {
-        return NULL;
+		return NULL;
 	}
 	newVector->size = 0;
 	newVector->capacity = INITIAL_CAPACITY;
@@ -29,9 +29,9 @@ RoadVector *RoadVector_new() {
 }
 
 bool RoadVector_add(RoadVector *vector, Road *road) {
-    assert(vector);
+	assert(vector);
 	if(vector->size >= vector->capacity) {
-        vector->roadArray = realloc(vector->roadArray, vector->capacity * EXPANSION_RATIO * sizeof(Road*));
+		vector->roadArray = realloc(vector->roadArray, vector->capacity * EXPANSION_RATIO * sizeof(Road*));
 		vector->capacity *= EXPANSION_RATIO;
 		if(vector->roadArray == NULL) {
 			return false;
@@ -70,19 +70,19 @@ void RoadVector_remove(RoadVector *vector) {
 }
 
 size_t RoadVector_getSize(RoadVector *vector) {
-    return vector->size;
+	return vector->size;
 }
 
 Road *RoadVector_getRoadById(RoadVector *vector, size_t id) {
-    assert(id < vector->size);
-    return vector->roadArray[id];
+	assert(id < vector->size);
+	return vector->roadArray[id];
 }
 
 int RoadVector_getRoadIndexInVector(RoadVector *vector, Road *road) {
-    for(size_t i = 0; i < RoadVector_getSize(vector); i++) {
-        if(road == RoadVector_getRoadById(vector, i)) {
-            return i;
-        }
-    }
-    return -1;
+	for(size_t i = 0; i < RoadVector_getSize(vector); i++) {
+		if(road == RoadVector_getRoadById(vector, i)) {
+			return i;
+		}
+	}
+	return -1;
 }

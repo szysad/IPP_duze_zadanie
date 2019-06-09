@@ -17,7 +17,7 @@
  * struktura drogi.
  */
 typedef struct _road {
-    int buildYear; ///< rok budowy lub ostatniego remontu.
+	int buildYear; ///< rok budowy lub ostatniego remontu.
 	unsigned int length; ///< długość drogi.
 	int destination_index; ///< cel.
 } Road;

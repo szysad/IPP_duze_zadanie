@@ -15,8 +15,8 @@
  * Struktura reprezentująca nazwę miasta.
  */
 typedef struct _city {
-    size_t length;
-    char *name;
+	size_t length;
+	char *name;
 } City;
 
 /**

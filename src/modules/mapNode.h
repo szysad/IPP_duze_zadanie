@@ -18,7 +18,7 @@ typedef struct _mapNode {
 	int index; ///< index miasta.
 	City *city; ///< wskaźnik na struktuę nazwy miasta,
 	RoadVector *roadVector; ///< wskaźnika na strukturę Vektora dróg wychodzących z miastsa.
-    unsigned distanceFromRoot; ///< potrzebne dla algorytmów wyszukiwania optymalnej ścieżki
+	unsigned distanceFromRoot; ///< potrzebne dla algorytmów wyszukiwania optymalnej ścieżki
 	int oldestRoadAgeToMe; ///< potrzebne dla algorytmów wyszukiwania optymalnej ścieżki
 } MapNode;
 

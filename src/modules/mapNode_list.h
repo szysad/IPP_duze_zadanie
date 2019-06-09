@@ -17,20 +17,20 @@
  * Struktura reprezentująca węzeł listy drogi krajowej.
  */
 typedef struct _listNode{
-    MapNode *value; ///< wskaźnik na strukturę miasta.
-    struct _listNode *next; ///< wskaźnik na następnik w liście drogi krajowej.
+	MapNode *value; ///< wskaźnik na strukturę miasta.
+	struct _listNode *next; ///< wskaźnik na następnik w liście drogi krajowej.
 } ListNode;
 
 /**
  * Struktura reprezentująca drogę krajową
  */
 typedef struct {
-    ListNode *head; ///< wskaźnik na pierwszye element w liście drogi krajowej.
-    ListNode *tail; ///< wskaźnik na ostatni element w liście drogi krajowej.
-    int size; ///< ilosc miast w drodze krajowej.
-    int length; ///< łączna długość drogi krajowej.
-    int oldestIncludedRoadAge; ///< wiek najstarszego odcinka w drodze krajowej.
-    unsigned routeId; ///< numer drogi krajowej.
+	ListNode *head; ///< wskaźnik na pierwszye element w liście drogi krajowej.
+	ListNode *tail; ///< wskaźnik na ostatni element w liście drogi krajowej.
+	int size; ///< ilosc miast w drodze krajowej.
+	int length; ///< łączna długość drogi krajowej.
+	int oldestIncludedRoadAge; ///< wiek najstarszego odcinka w drodze krajowej.
+	unsigned routeId; ///< numer drogi krajowej.
 } MapNodeList;
 
 /**

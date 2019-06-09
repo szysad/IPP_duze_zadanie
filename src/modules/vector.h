@@ -15,10 +15,10 @@
  * struktur vectora.
  */
 typedef struct {
-    void **elementsArr; ///< talica elemtntów.
-    size_t capacity; ///< rozmiar vectora.
-    size_t size; ///< ilość elementów.
-    void (*freeFunc)(void *); ///< funkcja zwalaniająca pamięć.
+	void **elementsArr; ///< talica elemtntów.
+	size_t capacity; ///< rozmiar vectora.
+	size_t size; ///< ilość elementów.
+	void (*freeFunc)(void *); ///< funkcja zwalaniająca pamięć.
 } Vector;
 
 /**
